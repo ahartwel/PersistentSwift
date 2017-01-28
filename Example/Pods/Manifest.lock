@@ -1,0 +1,16 @@
+PODS:
+  - PersistentSwift (0.1.0)
+
+DEPENDENCIES:
+  - PersistentSwift (from `../`)
+
+EXTERNAL SOURCES:
+  PersistentSwift:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  PersistentSwift: bfbbc53c967f81434870725be6ac8ef558f41422
+
+PODFILE CHECKSUM: ee6afca765de3b15f9a8dabee804333eec6bc640
+
+COCOAPODS: 1.1.1

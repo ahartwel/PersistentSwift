@@ -1,0 +1,6 @@
+framework module PersistentSwift {
+  umbrella header "PersistentSwift-umbrella.h"
+
+  export *
+  module * { export * }
+}
