@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'PersistentSwift_Example' do
+  pod 'PersistentSwift', :path => '../'
+
+  target 'PersistentSwift_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
