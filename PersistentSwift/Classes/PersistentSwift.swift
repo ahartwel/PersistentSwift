@@ -7,11 +7,6 @@
 //
 
 import Foundation
-import Foundation
-
-
-
-
 
 open class PSModelCache {
     
@@ -127,7 +122,7 @@ open class PSModelCache {
         }
     }
     
-    
+    //I am assuming every model has an id (this property is not used in the internals of the cache, you can set it to whatever is in your db)
     public var id: String = "";
     
     public var isInCache: Bool = false;
