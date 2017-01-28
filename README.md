@@ -23,7 +23,7 @@ PersistentSwift is available under the MIT license. See the LICENSE file for mor
 
 ##How to use
 
-- Every model that subclasses PSCachedModel will automatically be NSCoding compliant and archive and unarchive without any extra effort.
+- Every model that subclasses PSCachedModel will automatically be NSCoding compliant and archive and unarchive without any extra effort. (besides overriding modelName)
 - Register models you want to cache with the Model Cache
 - You need to manually add models to the cache with addToCache();
 
