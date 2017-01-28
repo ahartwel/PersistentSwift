@@ -51,6 +51,7 @@ PersistentSwift is available under the MIT license. See the LICENSE file for mor
         newModel.addToCache();
         
         PSModelCache.saveCache();
+        PSModelCache.loadCache();
         
         
         let models: [ModelToCache] = ModelToCache.models; //gets all of the cached models
