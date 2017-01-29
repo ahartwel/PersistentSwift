@@ -80,7 +80,7 @@ class Tests: XCTestCase {
                 }
             }
             
-            var name: String = "Hello";
+            var name: String? = nil;
             var isLive: Bool = true;
             var number: Double = 1000;
             
@@ -96,7 +96,7 @@ class Tests: XCTestCase {
         newModel.addToCache();
         
         PSModelCache.shared.saveCache();
-        
+        PSModelCache.shared.cache[TestModel.modelName] = [];
         PSModelCache.shared.loadCache();
         if let models: [TestModel] = PSModelCache.shared.getModelsFromCache(ofType: TestModel.self) {
             let obj = models[0];
@@ -122,7 +122,7 @@ class Tests: XCTestCase {
                 }
             }
             
-            var name: String = "Hello";
+            var name: String? = "Hello";
             var isLive: Bool = true;
             var number: Double = 1000;
             

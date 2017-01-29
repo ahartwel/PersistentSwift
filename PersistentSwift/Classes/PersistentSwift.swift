@@ -163,12 +163,7 @@ open class PSModelCache {
         for child in mirror.children { //mirror the object so we can loop through the object'ss properties and get the saved values
             if let name = child.label {
                 let value = aDecoder.decodeObject(forKey: name);
-                if self.value(forKey: name) != nil {
-                    setValue(value, forKey: name);
-                } else {
-                    print("\(name): is not key value compliant. It's value is not being cached. Add @objc to the property");
-                }
-                
+                setValue(value, forKey: name);
             }
         }
     }
