@@ -58,6 +58,7 @@ open class PSModelCache {
             var foundIn: Bool = false;
             var foundIndex: Int = -1;
             for (i, m) in self.cache[name]!.enumerated() {
+                print(m.id);
                 if model.id == m.id {
                     foundIn = true;
                     foundIndex = i;
@@ -144,13 +145,19 @@ open class PSModelCache {
     
     public func encode(with aCoder: NSCoder) {
         let mirror = Mirror(reflecting: self);
+        self.encodeFromMirror(mirror: mirror, aCoder: aCoder);
+    }
+    
+    func encodeFromMirror(mirror: Mirror, aCoder: NSCoder) {
         for child in mirror.children { //mirror the object so we can loop through the object's properties and get the saved values
             if let name = child.label {
                 aCoder.encode(child.value as? Any, forKey: name);
             }
         }
+        if let parent = mirror.superclassMirror {
+            self.encodeFromMirror(mirror: parent, aCoder: aCoder);
+        }
     }
-    
     
     
     public override init() {
@@ -169,15 +176,28 @@ open class PSModelCache {
     required public init?(coder aDecoder: NSCoder) {
         super.init();
         let mirror = Mirror(reflecting: self);
+        self.initFromMirror(mirror: mirror, aDecoder: aDecoder);
+    }
+    
+    func initFromMirror(mirror: Mirror, aDecoder: NSCoder) {
         for child in mirror.children { //mirror the object so we can loop through the object'ss properties and get the saved values
             if let name = child.label {
                 let value = aDecoder.decodeObject(forKey: name);
                 if value is NSNull {
                     print("the value for \(name) was NSNull, we are not loading it from the cache");
                 } else {
-                    setValue(value as? Any, forKey: name);
+                    if let v = value as? Any {
+                        if v is NSNull {
+                            print("not loading value \(name), it is NSNull");
+                        } else {
+                            setValue(v, forKey: name);
+                        }
+                    }
                 }
             }
+        }
+        if let parent = mirror.superclassMirror {
+            self.initFromMirror(mirror: parent, aDecoder: aDecoder);
         }
     }
     
