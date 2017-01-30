@@ -35,10 +35,12 @@ open class PSModelCache {
     }
     
     
+    
     /// add a model to the cache. It will find the proper cache based on the models type, append it and save the cache
     ///
-    /// - Parameter model: the model to save
-    public func addModelToCache(model: PSCachedModel) {
+    /// - Parameter model: the model to add
+    /// - Returns: true if model was added to the cache, false if it was already in it
+    public func addModelToCache(model: PSCachedModel) -> Bool {
         let type: PSCachedModel.Type = type(of: model);
         
         var inside: Bool = false;
@@ -49,21 +51,20 @@ open class PSModelCache {
         }
         if inside == false {
             assertionFailure("You did not register the model type \(type.modelName)");
-            return;
+            return false;
         }
         
-        
+        var alreadyInCache: Bool = false;
         let name = type.modelName;
         if var cache = self.cache[name] {
-            var foundIn: Bool = false;
             var foundIndex: Int = -1;
             for (i, m) in self.cache[name]!.enumerated() {
                 if model.id == m.id {
-                    foundIn = true;
+                    alreadyInCache = true;
                     foundIndex = i;
                 }
             }
-            if foundIn {
+            if alreadyInCache {
                 self.cache[name]![foundIndex] = model;
             } else {
                 cache.append(model);
@@ -76,6 +77,7 @@ open class PSModelCache {
         
         model.isInCache = true;
         self.saveCache();
+        return alreadyInCache == false;
     }
     
     /// load everything in the cache
@@ -163,12 +165,14 @@ open class PSModelCache {
         super.init();
     }
     
-    /// Add the model to the cache
-    public func addToCache() {
+    /// add a model to the cache
+    ///
+    /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
+    public func addToCache() -> Bool {
         if self.isInCache == true {
-            return;
+            return false;
         }
-        PSModelCache.shared.addModelToCache(model: self);
+        return PSModelCache.shared.addModelToCache(model: self);
     }
     
     
