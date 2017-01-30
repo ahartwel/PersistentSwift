@@ -55,6 +55,7 @@ open class PSModelCache {
         let name = type.modelName;
         if var cache = self.cache[name] {
             cache.append(model);
+            self.cache[name] = cache;
         } else {
             self.cache[name] = [];
             self.cache[name]?.append(model);
@@ -132,7 +133,7 @@ open class PSModelCache {
         let mirror = Mirror(reflecting: self);
         for child in mirror.children { //mirror the object so we can loop through the object's properties and get the saved values
             if let name = child.label {
-                aCoder.encode(child.value as? AnyObject, forKey: name);
+                aCoder.encode(child.value as? Any, forKey: name);
             }
         }
     }
@@ -158,7 +159,11 @@ open class PSModelCache {
         for child in mirror.children { //mirror the object so we can loop through the object'ss properties and get the saved values
             if let name = child.label {
                 let value = aDecoder.decodeObject(forKey: name);
-                setValue(value, forKey: name);
+                if value is NSNull {
+                    print("the value for \(name) was NSNull, we are not loading it from the cache");
+                } else {
+                    setValue(value as? Any, forKey: name);
+                }
             }
         }
     }
