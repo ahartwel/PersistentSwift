@@ -52,10 +52,23 @@ open class PSModelCache {
             return;
         }
         
+        
         let name = type.modelName;
         if var cache = self.cache[name] {
-            cache.append(model);
-            self.cache[name] = cache;
+            var foundIn: Bool = false;
+            var foundIndex: Int = -1;
+            for (i, m) in self.cache[name]!.enumerated() {
+                if model.id == m.id {
+                    foundIn = true;
+                    foundIndex = i;
+                }
+            }
+            if foundIn {
+                self.cache[name]![foundIndex] = model;
+            } else {
+                cache.append(model);
+                self.cache[name] = cache;
+            }
         } else {
             self.cache[name] = [];
             self.cache[name]?.append(model);
