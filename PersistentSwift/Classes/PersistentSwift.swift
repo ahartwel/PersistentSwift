@@ -58,7 +58,6 @@ open class PSModelCache {
             var foundIn: Bool = false;
             var foundIndex: Int = -1;
             for (i, m) in self.cache[name]!.enumerated() {
-                print(m.id);
                 if model.id == m.id {
                     foundIn = true;
                     foundIndex = i;
