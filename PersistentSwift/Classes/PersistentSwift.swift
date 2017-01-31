@@ -77,7 +77,7 @@ open class PSModelCache {
         }
         
         model.isInCache = true;
-        concurrentQueue.sync {
+        concurrentQueue.async {
             self.saveCache();
         } 
         return alreadyInCache == false;
