@@ -9,7 +9,6 @@
 import Foundation
 
 
-var PSThread = DispatchQueue(label: "PSModelCacheThread", attributes: .concurrent);
 
 open class PSModelCache {
     
@@ -18,13 +17,9 @@ open class PSModelCache {
     
     var dictionaryCache: [String: [String: PSCachedModel]] = [:];
     
-    
-    public static var concurrentQueue = {
-        return PSThread;
-    }();
  
     
-    /// get models of type from the cache
+    /// get models of type from the cache as an array
     ///
     /// - Parameter ofType: the type of object to get ex. SubclassCachedModel.self
     /// - Returns: the array of models if they exist, otherwise nil
@@ -36,6 +31,13 @@ open class PSModelCache {
         return nil;
     }
     
+    /// get models of a specific type from the cache as a dictionary [Id String: Obj]
+    ///
+    /// - Parameter ofType: the type of models you want ex SubclassCachedModel.self
+    /// - Returns: the dictionary of models if they exist, otherwise nil
+    public func getModelsDictionaryFromCache<T: PSCachedModel>(ofType: PSCachedModel.Type) -> [String: T]? {
+        return self.dictionaryCache[ofType.modelName] as? [String: T];
+    }
     
     
     /// Register model types to the cache
@@ -156,6 +158,16 @@ open class PSModelCache {
             return [];
         }
     }
+    
+    open class var modelsDictionary: [String: PSCachedModel] {
+        get {
+            if let models = PSModelCache.shared.getModelsDictionaryFromCache(ofType: self) {
+                return models;
+            }
+            return [:];
+        }
+    }
+    
     
     //I am assuming every model has an id (this property is not used in the internals of the cache, you can set it to whatever is in your db)
     public var id: String = "";

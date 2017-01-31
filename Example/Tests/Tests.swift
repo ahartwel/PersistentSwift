@@ -155,6 +155,34 @@ class Tests: XCTestCase {
         
     }
     
+    func testGetObjDictionary() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        
+        _ = model1.addToCache();
+        
+        let models = TestModel.modelsDictionary as! [String: TestModel];
+        XCTAssert(models["100"]!.id == model1.id);
+        
+    }
+    
     
     func testDuplicateObjectsBehaivor() {
         class TestModel: PSCachedModel {
