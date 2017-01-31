@@ -189,6 +189,64 @@ class Tests: XCTestCase {
         
     }
     
+    
+    func testModelSearching() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        model1.name = "WHAT WHAT"
+        
+        _ = model1.addToCache();
+        
+        let model2 = TestModel();
+        model2.id = "10000";
+        model2.name = "what";
+        
+        let models = PSDataManager<TestModel>.getModels(byValue: "WHAT WHAT", forKey: "name", ofType: String.self);
+        
+        XCTAssert(models.count == 1);
+        
+        
+        
+        
+    }
+    
+    
+    func testReturnType() {
+        class TestModel: PSCachedModel {
+                        
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        
+        
+    }
+    
     func testGetObjDictionary() {
         class TestModel: PSCachedModel {
             
