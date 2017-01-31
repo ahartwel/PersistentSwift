@@ -1,6 +1,6 @@
 {
   "name": "PersistentSwift",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "summary": "A model cache for swift",
   "description": "TODO: Add long description of the pod here.",
   "homepage": "https://github.com/<GITHUB_USERNAME>/PersistentSwift",
@@ -12,8 +12,8 @@
     "ahartwel": "hartwellalex@gmail.com"
   },
   "source": {
-    "git": "https://github.com/<GITHUB_USERNAME>/PersistentSwift.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/ahartwel/PersistentSwift.git",
+    "tag": "0.1.1"
   },
   "platforms": {
     "ios": "8.0"

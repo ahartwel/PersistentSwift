@@ -8,12 +8,20 @@
 
 import Foundation
 
+
+var PSThread = DispatchQueue(label: "PSModelCacheThread", attributes: .concurrent);
+
 open class PSModelCache {
     
     public static var shared: PSModelCache = PSModelCache();
     public var models: [PSCachedModel.Type] = [];
-    public var cache: [String: [PSCachedModel]] = [:];
-    public static var concurrentQueue = DispatchQueue(label: "PSModelCacheThread", attributes: .concurrent);
+    
+    var dictionaryCache: [String: [String: PSCachedModel]] = [:];
+    
+    
+    public static var concurrentQueue = {
+        return PSThread;
+    }();
  
     
     /// get models of type from the cache
@@ -21,7 +29,11 @@ open class PSModelCache {
     /// - Parameter ofType: the type of object to get ex. SubclassCachedModel.self
     /// - Returns: the array of models if they exist, otherwise nil
     public func getModelsFromCache<T: PSCachedModel>(ofType: PSCachedModel.Type) -> [T]? {
-        return self.cache[ofType.modelName] as? [T]
+        if let cache = self.dictionaryCache[ofType.modelName] {
+            let array = Array(cache.values);
+            return array as! [T];
+        }
+        return nil;
     }
     
     
@@ -54,41 +66,43 @@ open class PSModelCache {
             assertionFailure("You did not register the model type \(type.modelName)");
             return false;
         }
+
         
-        var alreadyInCache: Bool = false;
         let name = type.modelName;
-        if var cache = self.cache[name] {
-            var foundIndex: Int = -1;
-            for (i, m) in self.cache[name]!.enumerated() {
-                if model.id == m.id {
-                    alreadyInCache = true;
-                    foundIndex = i;
-                }
-            }
-            if alreadyInCache {
-                self.cache[name]![foundIndex] = model;
-            } else {
-                cache.append(model);
-                self.cache[name] = cache;
-            }
-        } else {
-            self.cache[name] = [];
-            self.cache[name]?.append(model);
-        }
+
+        self.createCacheIfNeeded(ofName: name);
+        var alreadyInCache: Bool = self.isObjectInCache(ofName: name, obj: model);
+        self.appendObjectToCache(ofName: name, obj: model);
         
         model.isInCache = true;
-        PSModelCache.concurrentQueue.async {
-            self.saveCache();
-        } 
+
         return alreadyInCache == false;
+    }
+    
+    
+    func isObjectInCache(ofName name: String, obj: PSCachedModel) -> Bool {
+        if (self.dictionaryCache[name]![obj.id] != nil) {
+            return true;
+        }
+        return false;
+    }
+    
+    func createCacheIfNeeded(ofName name: String) {
+        if self.dictionaryCache[name] == nil {
+            self.dictionaryCache[name] = [:];
+        }
+    }
+    
+    func appendObjectToCache(ofName name: String, obj: PSCachedModel) {
+        self.dictionaryCache[name]?[obj.id] = obj;
     }
     
     /// load everything in the cache
     public func loadCache() {
         for model in self.models {
             if let data = UserDefaults.standard.object(forKey: model.modelName) as? Data {
-                if let objs = NSKeyedUnarchiver.unarchiveObject(with: data) as? [PSCachedModel] {
-                    self.cache[model.modelName] = objs;
+                if let objs = NSKeyedUnarchiver.unarchiveObject(with: data) as? [String: PSCachedModel] {
+                    self.dictionaryCache[model.modelName] = objs;
                 }
             }
             
@@ -98,9 +112,7 @@ open class PSModelCache {
     /// save everything in the cache
     public func saveCache() {
         for model in self.models {
-            if self.cache[model.modelName] == nil {
-                self.cache[model.modelName] = [];
-            }
+            self.createCacheIfNeeded(ofName: model.modelName);
             
             //look into removing duplicate objects
             //            let ar = $.uniq(self.cache[model.modelName]!, by: {
@@ -108,13 +120,17 @@ open class PSModelCache {
             //            });
             
             
-            let data = NSKeyedArchiver.archivedData(withRootObject: self.cache[model.modelName]!);
+            let data = NSKeyedArchiver.archivedData(withRootObject: self.dictionaryCache[model.modelName]!);
             UserDefaults.standard.setValue(data, forKeyPath: model.modelName);
             
         }
         UserDefaults.standard.synchronize();
     }
     
+    
+    public func clearCache() {
+        self.dictionaryCache = [:];
+    }
     
 }
 

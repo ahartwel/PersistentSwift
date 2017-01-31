@@ -20,6 +20,10 @@ class Tests: XCTestCase {
     }
     
     
+    
+    
+    
+    
     func testCachedModels() {
         
         class TestModel: PSCachedModel {
@@ -96,7 +100,7 @@ class Tests: XCTestCase {
         newModel.addToCache();
         
         PSModelCache.shared.saveCache();
-        PSModelCache.shared.cache[TestModel.modelName] = [];
+        PSModelCache.shared.clearCache();
         PSModelCache.shared.loadCache();
         if let models: [TestModel] = PSModelCache.shared.getModelsFromCache(ofType: TestModel.self) {
             let obj = models[0];
@@ -148,6 +152,44 @@ class Tests: XCTestCase {
         } else {
             XCTAssert(false);
         }
+        
+    }
+    
+    
+    func testDuplicateObjectsBehaivor() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        var model1 = TestModel();
+        model1.id = "100";
+        var model2 = TestModel()
+        model2.name = "WHAT WHAT WHAT";
+        model2.id = "100";
+        
+        
+        model1.addToCache();
+        
+        model2.addToCache();
+        
+        let models = TestModel.models as! [TestModel];
+        XCTAssert(models.count == 1);
+        XCTAssert(models[0].name == "WHAT WHAT WHAT")
+        
+        
         
     }
     
