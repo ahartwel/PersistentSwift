@@ -271,17 +271,18 @@ open class PSDataManager<T: PSCachedModel> {
     func initFromMirror(mirror: Mirror, aDecoder: NSCoder) {
         for child in mirror.children { //mirror the object so we can loop through the object'ss properties and get the saved values
             if let name = child.label {
-                let value = aDecoder.decodeObject(forKey: name);
-                if value is NSNull {
-                    print("the value for \(name) was NSNull, we are not loading it from the cache");
-                } else {
-                    if let v = value as? Any {
-                        if v is NSNull {
-                            print("not loading value \(name), it is NSNull");
+                
+                if aDecoder.containsValue(forKey: name) {
+                    
+                    if let value = aDecoder.decodeObject(forKey: name) as? Any {
+                        if value is NSNull {
+                            print("the value for \(name) was NSNull, we are not loading it from the cache");
                         } else {
-                            setValue(v, forKey: name);
+                            setValue(value, forKey: name);
                         }
                     }
+                } else {
+                    print("There was no value in key \(name). We are not loading it from the cache");
                 }
             }
         }
