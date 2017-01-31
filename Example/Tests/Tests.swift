@@ -75,6 +75,40 @@ class Tests: XCTestCase {
         
     }
     
+    
+    func testGetModelById() {
+        
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = nil;
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let newModel = TestModel();
+        newModel.id = "100";
+        newModel.name = "testtesttest";
+        newModel.isLive = false;
+        newModel.number = 10000;
+        newModel.addToCache();
+        
+        XCTAssert((TestModel.getModel(byId: "100") as! TestModel).name == "testtesttest");
+        
+        
+        
+        
+    }
+    
     func testCacheManager() {
         class TestModel: PSCachedModel {
             

@@ -169,6 +169,16 @@ open class PSModelCache {
     }
     
     
+    open class func getModel(byId id: String) -> PSCachedModel? {
+        if let models = PSModelCache.shared.getModelsDictionaryFromCache(ofType: self) {
+            if let model = models[id] {
+                return model;
+            }
+        }
+        return nil;
+    }
+    
+    
     //I am assuming every model has an id (this property is not used in the internals of the cache, you can set it to whatever is in your db)
     public var id: String = "";
     
