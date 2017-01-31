@@ -13,7 +13,8 @@ open class PSModelCache {
     public static var shared: PSModelCache = PSModelCache();
     public var models: [PSCachedModel.Type] = [];
     public var cache: [String: [PSCachedModel]] = [:];
-    
+    public static var concurrentQueue = DispatchQueue(label: "PSModelCacheThread", attributes: .concurrent);
+ 
     
     /// get models of type from the cache
     ///
@@ -76,7 +77,9 @@ open class PSModelCache {
         }
         
         model.isInCache = true;
-        self.saveCache();
+        concurrentQueue.sync {
+            self.saveCache();
+        } 
         return alreadyInCache == false;
     }
     
