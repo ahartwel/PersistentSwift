@@ -20,6 +20,10 @@ class Tests: XCTestCase {
     }
     
     
+    
+    
+    
+    
     func testCachedModels() {
         
         class TestModel: PSCachedModel {
@@ -71,6 +75,40 @@ class Tests: XCTestCase {
         
     }
     
+    
+    func testGetModelById() {
+        
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = nil;
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let newModel = TestModel();
+        newModel.id = "100";
+        newModel.name = "testtesttest";
+        newModel.isLive = false;
+        newModel.number = 10000;
+        newModel.addToCache();
+        
+        XCTAssert((TestModel.getModel(byId: "100") as! TestModel).name == "testtesttest");
+        
+        
+        
+        
+    }
+    
     func testCacheManager() {
         class TestModel: PSCachedModel {
             
@@ -96,7 +134,7 @@ class Tests: XCTestCase {
         newModel.addToCache();
         
         PSModelCache.shared.saveCache();
-        PSModelCache.shared.cache[TestModel.modelName] = [];
+        PSModelCache.shared.clearCache();
         PSModelCache.shared.loadCache();
         if let models: [TestModel] = PSModelCache.shared.getModelsFromCache(ofType: TestModel.self) {
             let obj = models[0];
@@ -139,15 +177,176 @@ class Tests: XCTestCase {
         
         let models: [TestModel] = TestModel.models as! [TestModel];
         if let model = models[0] as? TestModel {
-        if model.name == "testtest" {
-            XCTAssert(true);
-        } else {
-            XCTAssert(false);
-
+            if model.name == "testtest" {
+                XCTAssert(true);
+            } else {
+                XCTAssert(false);
+                
             }
         } else {
             XCTAssert(false);
         }
+        
+    }
+    
+    
+    func testModelSearching() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        model1.name = "WHAT WHAT"
+        
+        _ = model1.addToCache();
+        
+        let model2 = TestModel();
+        model2.id = "10000";
+        model2.name = "what";
+        
+        let models = PSDataManager<TestModel>.getModels(byValue: "WHAT WHAT", forKey: "name", ofType: String.self);
+        
+        XCTAssert(models.count == 1);
+        
+        
+        
+        
+    }
+    
+    
+    func testReturnType() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        
+        
+    }
+    
+    func testGetObjDictionary() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        
+        _ = model1.addToCache();
+        
+        let models = TestModel.modelsDictionary as! [String: TestModel];
+        XCTAssert(models["100"]!.id == model1.id);
+        
+    }
+    
+    
+    func testDuplicateObjectsBehaivor() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        var model1 = TestModel();
+        model1.id = "100";
+        var model2 = TestModel()
+        model2.name = "WHAT WHAT WHAT";
+        model2.id = "100";
+        
+        
+        model1.addToCache();
+        
+        model2.addToCache();
+        
+        let models = TestModel.models as! [TestModel];
+        XCTAssert(models.count == 1);
+        XCTAssert(models[0].name == "WHAT WHAT WHAT")
+        
+        
+        
+    }
+    
+    
+    func testBindingAdd() {
+        let exp = self.expectation(description: "get event with a model");
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        var model1 = TestModel();
+        model1.id = "100";
+        
+        var onDataAdded: (PSDataEvent<PSCachedModel>) -> () = {
+            event in
+            print(event);
+            if event.getData() != nil {
+                exp.fulfill();
+            }
+        }
+        
+        TestModel.addCallbackOnCacheChange(onDataAdded);
+        model1.addToCache();
+        
+        self.waitForExpectations(timeout: 4, handler: nil);
+        
         
     }
     

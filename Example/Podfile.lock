@@ -1,5 +1,5 @@
 PODS:
-  - PersistentSwift (0.1.0)
+  - PersistentSwift (0.1.1)
 
 DEPENDENCIES:
   - PersistentSwift (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  PersistentSwift: bfbbc53c967f81434870725be6ac8ef558f41422
+  PersistentSwift: 1eebbfd768b53e40446a1cfff81212145b930dc4
 
 PODFILE CHECKSUM: ee6afca765de3b15f9a8dabee804333eec6bc640
 
