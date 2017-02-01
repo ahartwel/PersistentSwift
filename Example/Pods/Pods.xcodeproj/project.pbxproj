@@ -7,12 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+<<<<<<< HEAD
 		02F2D52477BB90C933F29330F71A362C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBB3DE36805AF21409EC968A9691732F /* Foundation.framework */; };
 		3135B6345EB70BBD23DFD5D1B05FD033 /* Pods-PersistentSwift_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 248BCBADCD27694C72584E86D8CD4362 /* Pods-PersistentSwift_Example-dummy.m */; };
 		45A9CB99BFBE7EEBF12D7E02132EA6DD /* Pods-PersistentSwift_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C7C14A8D6709E76844CBB8D43E1F86A1 /* Pods-PersistentSwift_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		736E81A400EF4A58D687DDFE0039700E /* PersistentSwift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 57452D7A251AA0DBF2980666A77B5485 /* PersistentSwift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		78964269C123C49E19AD171A95155C59 /* DataBind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F46FDA35F202E81BEE07C168816451 /* DataBind.swift */; };
 		86B56A1904CCFD4D4FFA13B6CFF33AA4 /* PersistentSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495EE2408627A6C9BCA7ACD78108FA5D /* PersistentSwift.swift */; };
+=======
+		180932A404CC6B51CD36181086A47434 /* PersistentSwift-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 57452D7A251AA0DBF2980666A77B5485 /* PersistentSwift-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		28A038EDF2CFFCECA8763B799B9C4901 /* PersistentSwift-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B543C9E38AF3469C1D71F43860C848A4 /* PersistentSwift-dummy.m */; };
+		3135B6345EB70BBD23DFD5D1B05FD033 /* Pods-PersistentSwift_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 248BCBADCD27694C72584E86D8CD4362 /* Pods-PersistentSwift_Example-dummy.m */; };
+		45A9CB99BFBE7EEBF12D7E02132EA6DD /* Pods-PersistentSwift_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C7C14A8D6709E76844CBB8D43E1F86A1 /* Pods-PersistentSwift_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9F40A47F012FF60A7693AF8843BC30AB /* PersistentSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8635F73F742E4BD871F1E51F0E3FB00 /* PersistentSwift.swift */; };
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 		B66E5DE7614BB99A162A9E8DE89A15F6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBB3DE36805AF21409EC968A9691732F /* Foundation.framework */; };
 		C36D20C8DD9D6D49D66B27C6EB93C243 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBB3DE36805AF21409EC968A9691732F /* Foundation.framework */; };
 		C8B68A69BDDFB700427CC377862C4F61 /* Pods-PersistentSwift_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 273B3C18519E0A5318987F53649FBA4B /* Pods-PersistentSwift_Tests-dummy.m */; };
@@ -49,7 +57,10 @@
 		57452D7A251AA0DBF2980666A77B5485 /* PersistentSwift-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PersistentSwift-umbrella.h"; sourceTree = "<group>"; };
 		595BDD79FAA23BE3ADAC75C3D0AC47D8 /* Pods-PersistentSwift_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PersistentSwift_Example-frameworks.sh"; sourceTree = "<group>"; };
 		5FE49F5070469AC8CEDF09B222D0894C /* PersistentSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = PersistentSwift.modulemap; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		65F46FDA35F202E81BEE07C168816451 /* DataBind.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DataBind.swift; sourceTree = "<group>"; };
+=======
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 		6733E0825B93436ABC0E65527B76ADFD /* Pods_PersistentSwift_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_PersistentSwift_Tests.framework; path = "Pods-PersistentSwift_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BA65A60B07189A5285E1418E3555AA5 /* Pods-PersistentSwift_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PersistentSwift_Example.release.xcconfig"; sourceTree = "<group>"; };
 		7BA6DF5ABF1E6F0B737786BFC8C572F4 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -64,6 +75,7 @@
 		B543C9E38AF3469C1D71F43860C848A4 /* PersistentSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PersistentSwift-dummy.m"; sourceTree = "<group>"; };
 		BBC3A514FA5AA441BBF4136F8DFDFB32 /* PersistentSwift-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PersistentSwift-prefix.pch"; sourceTree = "<group>"; };
 		C7C14A8D6709E76844CBB8D43E1F86A1 /* Pods-PersistentSwift_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PersistentSwift_Tests-umbrella.h"; sourceTree = "<group>"; };
+		C8635F73F742E4BD871F1E51F0E3FB00 /* PersistentSwift.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PersistentSwift.swift; sourceTree = "<group>"; };
 		CBB3DE36805AF21409EC968A9691732F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		CF1CEE728C6D8747452157D5C1ED2053 /* Pods-PersistentSwift_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PersistentSwift_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		D7C81D724A1969452F983C0542B2E501 /* Pods-PersistentSwift_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-PersistentSwift_Example-resources.sh"; sourceTree = "<group>"; };
@@ -109,6 +121,18 @@
 			name = "Development Pods";
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
+		162AFED4A9EB3A81C49C44B0A0840B36 /* PersistentSwift */ = {
+			isa = PBXGroup;
+			children = (
+				71159B643DD971A3D3FC57806C5576C4 /* Classes */,
+			);
+			name = PersistentSwift;
+			path = PersistentSwift;
+			sourceTree = "<group>";
+		};
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 		29A8289DC3286B8C7DF0A0B47CDF1604 /* Pods-PersistentSwift_Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,6 +171,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+<<<<<<< HEAD
+=======
+		71159B643DD971A3D3FC57806C5576C4 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C8635F73F742E4BD871F1E51F0E3FB00 /* PersistentSwift.swift */,
+			);
+			name = Classes;
+			path = Classes;
+			sourceTree = "<group>";
+		};
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 		7531C8F8DE19F1AA3C8A7AC97A91DC29 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -368,7 +404,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+<<<<<<< HEAD
 				C8B68A69BDDFB700427CC377862C4F61 /* Pods-PersistentSwift_Tests-dummy.m in Sources */,
+=======
+				28A038EDF2CFFCECA8763B799B9C4901 /* PersistentSwift-dummy.m in Sources */,
+				9F40A47F012FF60A7693AF8843BC30AB /* PersistentSwift.swift in Sources */,
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -681,6 +722,41 @@
 			};
 			name = Debug;
 		};
+<<<<<<< HEAD
+=======
+		D02D9AD01875CF9B143E818C654DAE30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 807ED7CD9FE3C1107C485B726E4318E2 /* PersistentSwift.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/PersistentSwift/PersistentSwift-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/PersistentSwift/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/PersistentSwift/PersistentSwift.modulemap";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = PersistentSwift;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */

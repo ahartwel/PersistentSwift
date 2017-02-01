@@ -230,7 +230,7 @@ class Tests: XCTestCase {
     
     func testReturnType() {
         class TestModel: PSCachedModel {
-            
+
             override class var modelName: String {
                 get {
                     return "Test Model"
@@ -313,6 +313,7 @@ class Tests: XCTestCase {
         
     }
     
+
     
     func testBindingAdd() {
         let exp = self.expectation(description: "get event with a model");
@@ -350,6 +351,7 @@ class Tests: XCTestCase {
         
     }
     
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         

@@ -13,11 +13,20 @@ open class PSModelCache {
     
     public static var shared: PSModelCache = PSModelCache();
     public var models: [PSCachedModel.Type] = [];
+<<<<<<< HEAD
+    
+    var dictionaryCache: [String: [String: PSCachedModel]] = [:];
+=======
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
     
     var dictionaryCache: [String: [String: PSCachedModel]] = [:];
     
+ 
     
+<<<<<<< HEAD
     
+=======
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
     /// get models of type from the cache as an array
     ///
     /// - Parameter ofType: the type of object to get ex. SubclassCachedModel.self
@@ -67,16 +76,25 @@ open class PSModelCache {
             assertionFailure("You did not register the model type \(type.modelName)");
             return false;
         }
+
         
         
         let name = type.modelName;
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
         self.createCacheIfNeeded(ofName: name);
         var alreadyInCache: Bool = self.isObjectInCache(ofName: name, obj: model);
         self.appendObjectToCache(ofName: name, obj: model);
         
         model.isInCache = true;
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
         return alreadyInCache == false;
     }
     
@@ -133,6 +151,7 @@ open class PSModelCache {
         self.dictionaryCache = [:];
     }
     
+<<<<<<< HEAD
 }
 
 
@@ -254,6 +273,54 @@ public enum PSDataEvent<T: PSCachedModel> {
     
 }
 
+=======
+}
+
+
+open class PSDataManager<T: PSCachedModel> {
+    
+    open static func getModelsArray() -> [T] {
+        return T.models as! [T];
+    }
+    
+    open static func getModelsDictionary() -> [String: T] {
+        return T.modelsDictionary as! [String : T];
+    }
+    
+    open static func getModel(byId id: String) -> T? {
+        return T.getModel(byId: id) as? T
+    }
+    
+    open static func getModels<V: Equatable where T: AnyObject>(byValue value: Any, forKey key: String, ofType type: V.Type) -> [T] {
+        let allModels = T.models as! [T];
+        var foundModels: [T] = [];
+        for model in allModels {
+            if let v = model.value(forKey: key) {
+                if let equal = isEqual(type: type, a: v, b: value) {
+                    if equal {
+                        foundModels.append(model);
+                    }
+                }
+            }
+        }
+        return foundModels;
+        
+    }
+        
+    
+    
+    static func isEqual<T: Equatable>(type: T.Type, a: Any, b: Any) -> Bool? {
+        guard let a = a as? T, let b = b as? T else { return nil }
+        
+        return a == b
+    }
+    
+}
+
+
+
+
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 /// Base cached model
 @objc open class PSCachedModel: NSObject, NSCoding {
     
@@ -272,7 +339,11 @@ public enum PSDataEvent<T: PSCachedModel> {
         }
     }
     
+<<<<<<< HEAD
     
+=======
+  
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
     
     /// helper property, it gets all of the cached models of this type from the model cache
     open class var models: [PSCachedModel] {
@@ -337,6 +408,7 @@ public enum PSDataEvent<T: PSCachedModel> {
     public func addToCache() -> Bool {
         if self.isInCache == true {
             return false;
+<<<<<<< HEAD
         }
         
         let addedToCache = PSModelCache.shared.addModelToCache(model: self);
@@ -347,6 +419,10 @@ public enum PSDataEvent<T: PSCachedModel> {
         }
         
         return addedToCache;
+=======
+        }
+        return PSModelCache.shared.addModelToCache(model: self);
+>>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
     }
     
     
