@@ -13,20 +13,13 @@ open class PSModelCache {
     
     public static var shared: PSModelCache = PSModelCache();
     public var models: [PSCachedModel.Type] = [];
-<<<<<<< HEAD
-    
-    var dictionaryCache: [String: [String: PSCachedModel]] = [:];
-=======
->>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
+
     
     var dictionaryCache: [String: [String: PSCachedModel]] = [:];
     
  
     
-<<<<<<< HEAD
-    
-=======
->>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
+
     /// get models of type from the cache as an array
     ///
     /// - Parameter ofType: the type of object to get ex. SubclassCachedModel.self
@@ -80,21 +73,13 @@ open class PSModelCache {
         
         
         let name = type.modelName;
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
         self.createCacheIfNeeded(ofName: name);
         var alreadyInCache: Bool = self.isObjectInCache(ofName: name, obj: model);
         self.appendObjectToCache(ofName: name, obj: model);
         
         model.isInCache = true;
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
         return alreadyInCache == false;
     }
     
@@ -130,6 +115,8 @@ open class PSModelCache {
     
     /// save everything in the cache
     public func saveCache() {
+        
+        
         for model in self.models {
             self.createCacheIfNeeded(ofName: model.modelName);
             
@@ -151,7 +138,6 @@ open class PSModelCache {
         self.dictionaryCache = [:];
     }
     
-<<<<<<< HEAD
 }
 
 
@@ -273,8 +259,7 @@ public enum PSDataEvent<T: PSCachedModel> {
     
 }
 
-=======
-}
+
 
 
 open class PSDataManager<T: PSCachedModel> {
@@ -315,12 +300,19 @@ open class PSDataManager<T: PSCachedModel> {
         return a == b
     }
     
+    static func synchronize<T>(lockObj: AnyObject!, closure: ()->T) -> T
+    {
+        objc_sync_enter(lockObj)
+        var retVal: T = closure()
+        objc_sync_exit(lockObj)
+        return retVal
+    }
+    
 }
 
 
 
 
->>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
 /// Base cached model
 @objc open class PSCachedModel: NSObject, NSCoding {
     
@@ -339,11 +331,7 @@ open class PSDataManager<T: PSCachedModel> {
         }
     }
     
-<<<<<<< HEAD
-    
-=======
-  
->>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
+
     
     /// helper property, it gets all of the cached models of this type from the model cache
     open class var models: [PSCachedModel] {
@@ -408,7 +396,6 @@ open class PSDataManager<T: PSCachedModel> {
     public func addToCache() -> Bool {
         if self.isInCache == true {
             return false;
-<<<<<<< HEAD
         }
         
         let addedToCache = PSModelCache.shared.addModelToCache(model: self);
@@ -419,10 +406,7 @@ open class PSDataManager<T: PSCachedModel> {
         }
         
         return addedToCache;
-=======
-        }
-        return PSModelCache.shared.addModelToCache(model: self);
->>>>>>> e5fbfd67b186bf683bdc8856de72ca3f45b18b60
+
     }
     
     
