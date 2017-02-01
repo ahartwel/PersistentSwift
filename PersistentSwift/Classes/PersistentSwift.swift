@@ -262,57 +262,6 @@ public enum PSDataEvent<T: PSCachedModel> {
 
 
 
-open class PSDataManager<T: PSCachedModel> {
-    
-    open static func getModelsArray() -> [T] {
-        return T.models as! [T];
-    }
-    
-    open static func getModelsDictionary() -> [String: T] {
-        return T.modelsDictionary as! [String : T];
-    }
-    
-    open static func getModel(byId id: String) -> T? {
-        return T.getModel(byId: id) as? T
-    }
-    
-    open static func getModels<V: Equatable where T: AnyObject>(byValue value: Any, forKey key: String, ofType type: V.Type) -> [T] {
-        let allModels = T.models as! [T];
-        var foundModels: [T] = [];
-        for model in allModels {
-            if let v = model.value(forKey: key) {
-                if let equal = isEqual(type: type, a: v, b: value) {
-                    if equal {
-                        foundModels.append(model);
-                    }
-                }
-            }
-        }
-        return foundModels;
-        
-    }
-        
-    
-    
-    static func isEqual<T: Equatable>(type: T.Type, a: Any, b: Any) -> Bool? {
-        guard let a = a as? T, let b = b as? T else { return nil }
-        
-        return a == b
-    }
-    
-    static func synchronize<T>(lockObj: AnyObject!, closure: ()->T) -> T
-    {
-        objc_sync_enter(lockObj)
-        var retVal: T = closure()
-        objc_sync_exit(lockObj)
-        return retVal
-    }
-    
-}
-
-
-
-
 /// Base cached model
 @objc open class PSCachedModel: NSObject, NSCoding {
     
