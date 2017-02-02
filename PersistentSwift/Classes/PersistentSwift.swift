@@ -98,11 +98,7 @@ open class PSModelCache {
     }
     
     func appendObjectToCache(ofName name: String, obj: PSCachedModel) {
-        if self.isObjectInCache(ofName: name, obj: obj) {
-            self.dictionaryCache[name]?[obj.id]?.updateFromCopy(obj);
-        } else {
-            self.dictionaryCache[name]?[obj.id] = obj;
-        }
+        self.dictionaryCache[name]?[obj.id] = obj;
         
     }
     
@@ -449,30 +445,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         }
     }
     
-    
-    func updateFromCopy(_ model: PSCachedModel) {
-        let mirror = Mirror(reflecting: model);
-        self.updateFromCopy(mirror: mirror);
-        
-    }
-    
-    fileprivate func updateFromCopy(mirror: Mirror) {
-        for child in mirror.children {
-            if let name = child.label, let value = child.label as? Any {
-                
-                if value is NSNull {
-                    print("value \(name) is NSNull, not updating the value");
-                } else {
-                    self.setValue(child.value, forKey: name);
-                }
-            }
-        }
-        if let parent = mirror.superclassMirror {
-            self.updateFromCopy(mirror: parent);
-        }
-
-    }
-    
+  
     
     
 }
