@@ -1,6 +1,7 @@
 import UIKit
 import XCTest
 import PersistentSwift
+import SwiftyJSON
 
 class Tests: XCTestCase {
     
@@ -352,6 +353,64 @@ class Tests: XCTestCase {
     }
     
 
+    func testJSONValueCreation() {
+        var value: PSModelValue<Int> = PSModelValue<Int>(path: "test.inside.int");
+        let jsonString = "{" +
+        "\"test\": {" +
+            "\"inside\": {" +
+                        "\"int\": 3" +
+            "}" +
+        "}" +
+        "}";
+        
+       
+        let json: JSON = JSON(parseJSON: jsonString);
+        
+        value.setValueFromJSON(json);
+        
+        XCTAssertEqual(value.get(), 3);
+        
+        
+        
+        
+        
+    }
+    
+    
+    func testJSONModelCreation() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            var _tester: PSModelValue<Int> = PSModelValue<Int>(path: "test.inside.int");
+            var tester: Int? {
+                return self._tester.get();
+            }
+        }
+        
+        let jsonString = "{" +
+            "\"test\": {" +
+            "\"inside\": {" +
+            "\"int\": 3" +
+            "}" +
+            "}" +
+        "}";
+        let json: JSON = JSON(parseJSON: jsonString);
+
+        let model = TestModel(withJSON: json);
+        
+        XCTAssertEqual(model.tester, 3);
+        
+    }
+    
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         

@@ -6,7 +6,7 @@
 //  Copyright © 2017 hartwell. All rights reserved.
 //
 import Foundation
-
+import SwiftyJSON
 
 
 open class PSModelCache {
@@ -259,8 +259,39 @@ public enum PSDataEvent<T: PSCachedModel> {
     
 }
 
-
-
+public protocol PSModelValueProtocol {
+    func setValueFromJSON(_ json: JSON)
+}
+open class PSModelValue<T: Any>: PSModelValueProtocol {
+    private var value: T?
+    private var path: String = "";
+    
+    public init(path: String) {
+        self.path = path;
+    }
+    
+    public func get() -> T? {
+        return value;
+    }
+    
+    public func set(_ value: T) {
+        self.value = value;
+    }
+    
+    public func setValueFromJSON(_ json: JSON) {
+        let paths = self.path.components(separatedBy: ".");
+        var j = json;
+        for path in paths {
+            if let value = j[path].rawValue as? T {
+                self.value = value;
+            } else {
+                j = j[path];
+            }
+        }
+    }
+    
+    
+}
 
 /// Base cached model
 @objc open class PSCachedModel: NSObject, NSCoding {
@@ -331,6 +362,27 @@ public enum PSDataEvent<T: PSCachedModel> {
         }
         if let parent = mirror.superclassMirror {
             self.encodeFromMirror(mirror: parent, aCoder: aCoder);
+        }
+    }
+    
+    
+    public init(withJSON json: JSON) {
+        super.init();
+        let mirror = Mirror(reflecting: self);
+        self.initFromMirrorWithJSON(mirror: mirror, json: json);
+        
+        
+        
+    }
+    
+    func initFromMirrorWithJSON(mirror: Mirror, json: JSON) {
+        for child in mirror.children {
+            if let value = child.value as? PSModelValueProtocol {
+                value.setValueFromJSON(json);
+            }
+        }
+        if let parent = mirror.superclassMirror {
+            self.initFromMirrorWithJSON(mirror: parent, json: json);
         }
     }
     
