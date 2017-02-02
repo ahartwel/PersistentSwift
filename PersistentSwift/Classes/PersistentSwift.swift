@@ -98,7 +98,12 @@ open class PSModelCache {
     }
     
     func appendObjectToCache(ofName name: String, obj: PSCachedModel) {
-        self.dictionaryCache[name]?[obj.id] = obj;
+        if self.isObjectInCache(ofName: name, obj: obj) {
+            self.dictionaryCache[name]?[obj.id]?.updateFromCopy(obj);
+        } else {
+            self.dictionaryCache[name]?[obj.id] = obj;
+        }
+        
     }
     
     /// load everything in the cache
@@ -262,6 +267,10 @@ public enum PSDataEvent<T: PSCachedModel> {
 public protocol PSModelValueProtocol {
     func setValueFromJSON(_ json: JSON)
 }
+
+
+
+
 open class PSModelValue<T: Any>: PSModelValueProtocol {
     private var value: T?
     private var path: String = "";
@@ -440,6 +449,24 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         }
     }
     
+    
+    func updateFromCopy(_ model: PSCachedModel) {
+        let mirror = Mirror(reflecting: model);
+        self.updateFromCopy(mirror: mirror);
+        
+    }
+    
+    fileprivate func updateFromCopy(mirror: Mirror) {
+        for child in mirror.children {
+            if let name = child.label {
+                self.setValue(child.value, forKey: name);
+            }
+        }
+        if let parent = mirror.superclassMirror {
+            self.updateFromCopy(mirror: parent);
+        }
+
+    }
     
     
     
