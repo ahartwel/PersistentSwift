@@ -458,8 +458,13 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     
     fileprivate func updateFromCopy(mirror: Mirror) {
         for child in mirror.children {
-            if let name = child.label {
-                self.setValue(child.value, forKey: name);
+            if let name = child.label, let value = child.label as? Any {
+                
+                if value is NSNull {
+                    print("value \(name) is NSNull, not updating the value");
+                } else {
+                    self.setValue(child.value, forKey: name);
+                }
             }
         }
         if let parent = mirror.superclassMirror {
