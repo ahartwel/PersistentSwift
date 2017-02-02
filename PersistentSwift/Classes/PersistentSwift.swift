@@ -266,7 +266,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     private var value: T?
     private var path: String = "";
     
-    public init(path: String) {
+    public init(jsonPath path: String) {
         self.path = path;
     }
     

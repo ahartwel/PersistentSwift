@@ -354,7 +354,7 @@ class Tests: XCTestCase {
     
 
     func testJSONValueCreation() {
-        var value: PSModelValue<Int> = PSModelValue<Int>(path: "test.inside.int");
+        var value: PSModelValue<Int> = PSModelValue<Int>(jsonPath: "test.inside.int");
         let jsonString = "{" +
         "\"test\": {" +
             "\"inside\": {" +
@@ -389,7 +389,7 @@ class Tests: XCTestCase {
             var name: String? = "Hello";
             var isLive: Bool = true;
             var number: Double = 1000;
-            var _tester: PSModelValue<Int> = PSModelValue<Int>(path: "test.inside.int");
+            var _tester: PSModelValue<Int> = PSModelValue<Int>(jsonPath: "test.inside.int");
             var tester: Int? {
                 return self._tester.get();
             }
