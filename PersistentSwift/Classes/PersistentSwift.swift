@@ -469,8 +469,11 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
                         if let value = aDecoder.decodeObject(forKey: name) as? Any {
                             if value is NSNull {
                                 print("the value for \(name) was NSNull, we are not loading it from the cache");
-                            } else {
+                            } else if self.responds(to: Selector(name)) {
                                 setValue(value, forKey: name);
+                            } else {
+                                self.setValue(value, forUndefinedKey: name);
+                                print("the value \(name) did not respond to selector, set it up in an ovverride of setValue forUndefinedKey in your model");
                             }
                         }
                     }
