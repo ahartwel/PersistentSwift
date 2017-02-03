@@ -9,6 +9,35 @@ import Foundation
 import SwiftyJSON
 
 
+
+
+
+public protocol PSCodableEnum {
+    func int() -> Int;
+    
+    init?(rawValue:Int);
+    
+    init(defaultValue:Any)
+
+}
+
+
+extension NSCoder {
+    func encodeEnum(_ anEnum: PSCodableEnum, forKey:String) {
+        self.encode(anEnum.int(), forKey: forKey);
+    };
+    
+    func decodeEnum<T: PSCodableEnum>(forKey key:String) -> T {
+        if let t = T(rawValue:self.decodeInteger(forKey: key)) {
+            return t
+        } else {
+            return T(defaultValue:0)
+        }
+    }
+}
+
+
+
 open class PSModelCache {
     
     public static var shared: PSModelCache = PSModelCache();
@@ -353,6 +382,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     
     public var isInCache: Bool = false;
     
+ 
     
     public func encode(with aCoder: NSCoder) {
         let mirror = Mirror(reflecting: self);
@@ -361,7 +391,11 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     
     func encodeFromMirror(mirror: Mirror, aCoder: NSCoder) {
         for child in mirror.children { //mirror the object so we can loop through the object's properties and get the saved values
-            if let name = child.label {
+            
+            let enumMirror = Mirror(reflecting: child.value);
+            if enumMirror.displayStyle == Mirror.DisplayStyle.enum {
+                print("found an enum to be encoded. this is not possible yet, will not cache this value");
+            } else if let name = child.label {
                 aCoder.encode(child.value as? Any, forKey: name);
             }
         }
@@ -427,12 +461,17 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
             if let name = child.label {
                 
                 if aDecoder.containsValue(forKey: name) {
+                    let enumMirror = Mirror(reflecting: child.value);
+                    if enumMirror.displayStyle == Mirror.DisplayStyle.enum {
+                        print("FOUND AN ENUM TO DECODE, THIS IS NOT POSSIBLE YET");
+                    } else {
                     
-                    if let value = aDecoder.decodeObject(forKey: name) as? Any {
-                        if value is NSNull {
-                            print("the value for \(name) was NSNull, we are not loading it from the cache");
-                        } else {
-                            setValue(value, forKey: name);
+                        if let value = aDecoder.decodeObject(forKey: name) as? Any {
+                            if value is NSNull {
+                                print("the value for \(name) was NSNull, we are not loading it from the cache");
+                            } else {
+                                setValue(value, forKey: name);
+                            }
                         }
                     }
                 } else {

@@ -78,7 +78,10 @@ class Tests: XCTestCase {
     
     
     func testGetModelById() {
-        
+        enum TestEnum {
+            case what
+            case test
+        }
         class TestModel: PSCachedModel {
             
             override class var modelName: String {
@@ -86,7 +89,7 @@ class Tests: XCTestCase {
                     return "Test Model"
                 }
             }
-            
+            var testEnum: TestEnum = TestEnum.what;
             var name: String? = nil;
             var isLive: Bool = true;
             var number: Double = 1000;
@@ -111,18 +114,19 @@ class Tests: XCTestCase {
     }
     
     func testCacheManager() {
-        class TestModel: PSCachedModel {
+        
+              class TestModel: PSCachedModel {
             
             override class var modelName: String {
                 get {
                     return "Test Model"
                 }
             }
-            
             var name: String? = nil;
             var isLive: Bool = true;
             var number: Double = 1000;
             
+
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
