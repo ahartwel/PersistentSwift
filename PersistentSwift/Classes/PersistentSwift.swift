@@ -396,7 +396,14 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
             if enumMirror.displayStyle == Mirror.DisplayStyle.enum {
                 print("found an enum to be encoded. this is not possible yet, will not cache this value");
             } else if let name = child.label {
-                aCoder.encode(child.value as? Any, forKey: name);
+                if let value = child.value as? Any {
+                    if value is NSNull {
+                        print("value for key \(name) is NSNULL, not caching it");
+                    } else {
+                         aCoder.encode(child.value as? Any, forKey: name);            
+                    }
+                }
+               
             }
         }
         if let parent = mirror.superclassMirror {
