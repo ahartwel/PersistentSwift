@@ -47,6 +47,9 @@ open class PSModelCache {
     var dictionaryCache: [String: [String: PSCachedModel]] = [:];
     
  
+    public init() {
+        
+    }
     
 
     /// get models of type from the cache as an array
@@ -481,15 +484,13 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     }
     
     
-    /// add a model to the cache
-    ///
-    /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
-    public func addToCache() -> Bool {
+    //FOR TESTING PURPOSES ONLY
+    public func forTestingAddToCache(cache: PSModelCache) -> Bool {
         if self.isInCache == true {
             return false;
         }
         
-        let addedToCache = PSModelCache.shared.addModelToCache(model: self);
+        let addedToCache = cache.addModelToCache(model: self);
         if addedToCache {
             PSDataEvent.addData(self, eventHandler: &type(of: self).eventHandler);
         } else {
@@ -497,6 +498,13 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         }
         
         return addedToCache;
+    }
+    
+    /// add a model to the cache
+    ///
+    /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
+    public func addToCache() -> Bool {
+        return self.forTestingAddToCache(cache: PSModelCache.shared);
 
     }
     

@@ -26,6 +26,8 @@ class Tests: XCTestCase {
     
     
     func testCachedModels() {
+        var cache = PSModelCache();
+
         
         class TestModel: PSCachedModel {
             
@@ -44,13 +46,13 @@ class Tests: XCTestCase {
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         
         let newModel = TestModel();
         newModel.name = "test";
         newModel.isLive = false;
         newModel.number = 10;
-        newModel.addToCache();
+        newModel.forTestingAddToCache(cache: cache);
         
         let data = NSKeyedArchiver.archivedData(withRootObject: newModel);
         UserDefaults.standard.setValue(data, forKey: "cacheTest");
@@ -78,6 +80,8 @@ class Tests: XCTestCase {
     
     
     func testGetModelById() {
+        var cache = PSModelCache.shared;
+
         enum TestEnum {
             case what
             case test
@@ -97,14 +101,14 @@ class Tests: XCTestCase {
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         
         let newModel = TestModel();
         newModel.id = "100";
         newModel.name = "testtesttest";
         newModel.isLive = false;
         newModel.number = 10000;
-        newModel.addToCache();
+        newModel.forTestingAddToCache(cache: cache);
         
         XCTAssert((TestModel.getModel(byId: "100") as! TestModel).name == "testtesttest");
         
@@ -114,7 +118,8 @@ class Tests: XCTestCase {
     }
     
     func testCacheManager() {
-        
+        var cache = PSModelCache.shared;
+
               class TestModel: PSCachedModel {
             
             override class var modelName: String {
@@ -130,18 +135,18 @@ class Tests: XCTestCase {
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         
         let newModel = TestModel();
         newModel.name = "testtesttest";
         newModel.isLive = false;
         newModel.number = 10000;
-        newModel.addToCache();
+        newModel.forTestingAddToCache(cache: cache);
         
-        PSModelCache.shared.saveCache();
-        PSModelCache.shared.clearCache();
-        PSModelCache.shared.loadCache();
-        if let models: [TestModel] = PSModelCache.shared.getModelsFromCache(ofType: TestModel.self) {
+        cache.saveCache();
+        cache.clearCache();
+        cache.loadCache();
+        if let models: [TestModel] = cache.getModelsFromCache(ofType: TestModel.self) {
             let obj = models[0];
             if obj.name == "testtesttest" && obj.isLive == false && obj.number == 10000 {
                 XCTAssert(true);
@@ -157,6 +162,8 @@ class Tests: XCTestCase {
     
     
     func testCachedModelGetHelper() {
+        var cache = PSModelCache.shared;
+
         class TestModel: PSCachedModel {
             
             override class var modelName: String {
@@ -172,13 +179,13 @@ class Tests: XCTestCase {
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         
         let newModel = TestModel();
         newModel.name = "testtest";
         newModel.isLive = false;
         newModel.number = 10;
-        newModel.addToCache();
+        newModel.forTestingAddToCache(cache: cache);
         
         let models: [TestModel] = TestModel.models as! [TestModel];
         if let model = models[0] as? TestModel {
@@ -196,6 +203,8 @@ class Tests: XCTestCase {
     
     
     func testModelSearching() {
+        var cache = PSModelCache.shared;
+
         class TestModel: PSCachedModel {
             
             override class var modelName: String {
@@ -211,13 +220,13 @@ class Tests: XCTestCase {
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         
         let model1 = TestModel();
         model1.id = "100";
         model1.name = "WHAT WHAT"
         
-        _ = model1.addToCache();
+        _ = model1.forTestingAddToCache(cache: cache);
         
         let model2 = TestModel();
         model2.id = "10000";
@@ -253,6 +262,7 @@ class Tests: XCTestCase {
     }
     
     func testGetObjDictionary() {
+        var cache = PSModelCache.shared;
         class TestModel: PSCachedModel {
             
             override class var modelName: String {
@@ -268,12 +278,12 @@ class Tests: XCTestCase {
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         
         let model1 = TestModel();
         model1.id = "100";
         
-        _ = model1.addToCache();
+        _ = model1.forTestingAddToCache(cache: cache);
         
         let models = TestModel.modelsDictionary as! [String: TestModel];
         XCTAssert(models["100"]!.id == model1.id);
@@ -282,6 +292,8 @@ class Tests: XCTestCase {
     
     
     func testDuplicateObjectsBehaivor() {
+        var cache = PSModelCache.shared;
+
         class TestModel: PSCachedModel {
             
             override class var modelName: String {
@@ -297,7 +309,7 @@ class Tests: XCTestCase {
         }
         
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         
         var model1 = TestModel();
         model1.id = "100";
@@ -306,9 +318,9 @@ class Tests: XCTestCase {
         model2.id = "100";
         
         
-        model1.addToCache();
+        model1.forTestingAddToCache(cache: cache);
         
-        model2.addToCache();
+        model2.forTestingAddToCache(cache: cache);
         
         let models = TestModel.models as! [TestModel];
         XCTAssert(models.count == 1);
@@ -321,6 +333,8 @@ class Tests: XCTestCase {
 
     
     func testBindingAdd() {
+        var cache = PSModelCache();
+
         let exp = self.expectation(description: "get event with a model");
         class TestModel: PSCachedModel {
             
@@ -336,7 +350,7 @@ class Tests: XCTestCase {
             
         }
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
-        PSModelCache.shared.registerModels(models: modelArray);
+        cache.registerModels(models: modelArray);
         var model1 = TestModel();
         model1.id = "100";
         
@@ -349,7 +363,7 @@ class Tests: XCTestCase {
         }
         
         TestModel.addCallbackOnCacheChange(onDataAdded);
-        model1.addToCache();
+        model1.forTestingAddToCache(cache: cache);
         
         self.waitForExpectations(timeout: 4, handler: nil);
         
@@ -358,6 +372,8 @@ class Tests: XCTestCase {
     
 
     func testJSONValueCreation() {
+        var cache = PSModelCache();
+
         var value: PSModelValue<Int> = PSModelValue<Int>(jsonPath: "test.inside.int");
         let jsonString = "{" +
         "\"test\": {" +
