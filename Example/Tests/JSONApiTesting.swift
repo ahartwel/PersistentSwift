@@ -53,8 +53,8 @@ class JSONApiTesting: XCTestCase {
             super.init(coder: aDecoder);
         }
         
-        required public init?(jsonData: JSON) {
-            super.init(jsonData: jsonData);
+        required public init?(json: JSON) {
+            super.init(json: json);
         }
         
         override func setUpAttributes(json: JSON) {

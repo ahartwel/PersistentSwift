@@ -395,11 +395,11 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         return [:];
     }
     
-    required public init?(jsonData: JSON) {
+    required public init?(json: JSON) {
         super.init();
-        let attributes = jsonData["attributes"];
+        let attributes = json["attributes"];
         self.setUpAttributes(json: attributes);
-        let relationships = jsonData["relationships"];
+        let relationships = json["relationships"];
         self.setUpRelationships(json: relationships);
     }
     

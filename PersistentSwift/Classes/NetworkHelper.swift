@@ -21,7 +21,7 @@ public extension Response {
     public func map<T: PSCachedModel>(to type:T.Type) throws -> T {
         let jsonObject = try mapJSON()
         
-        guard let mappedObject = T(jsonData: JSON(jsonObject)["data"]) else {
+        guard let mappedObject = T(json: JSON(jsonObject)["data"]) else {
             throw MoyaError.jsonMapping(self)
         }
         
@@ -34,7 +34,7 @@ public extension Response {
         let jsonObject = try mapJSON()
         
         let mappedArray = JSON(jsonObject)["data"];
-        let mappedObjectsArray = mappedArray.arrayValue.flatMap { T(jsonData: $0) }
+        let mappedObjectsArray = mappedArray.arrayValue.flatMap { T(json: $0) }
         
         return mappedObjectsArray
     }
