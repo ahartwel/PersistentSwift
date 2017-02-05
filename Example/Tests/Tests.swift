@@ -380,39 +380,7 @@ class Tests: XCTestCase {
         
     }
     
-    
-    func testJSONModelCreation() {
-        class TestModel: PSCachedModel {
-            
-            override class var modelName: String {
-                get {
-                    return "Test Model"
-                }
-            }
-            
-            var name: String? = "Hello";
-            var isLive: Bool = true;
-            var number: Double = 1000;
-            var _tester: PSModelValue<Int> = PSModelValue<Int>(jsonPath: "test.inside.int");
-            var tester: Int? {
-                return self._tester.get();
-            }
-        }
-        
-        let jsonString = "{" +
-            "\"test\": {" +
-            "\"inside\": {" +
-            "\"int\": 3" +
-            "}" +
-            "}" +
-        "}";
-        let json: JSON = JSON(parseJSON: jsonString);
-
-        let model = TestModel(withJSON: json);
-        
-        XCTAssertEqual(model.tester, 3);
-        
-    }
+   
     
     
     func testPerformanceExample() {

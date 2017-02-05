@@ -382,7 +382,57 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     
     public var isInCache: Bool = false;
     
- 
+    open var attributes: [String: Any?] {
+        assertionFailure("You did not override attributes in PSCachedModel");
+        return [:];
+    }
+    
+    open var relationships: [String: (id: String, type: PSCachedModel.Type)] {
+        assertionFailure("You did not override relationships in PSCachedModel");
+        return [:];
+    }
+    
+    required public init?(jsonData: JSON) {
+        super.init();
+        let attributes = jsonData["attributes"];
+        self.setUpAttributes(json: attributes);
+        let relationships = jsonData["relationships"];
+        self.setUpRelationships(json: relationships);
+    }
+    
+    public func getCreateParameters(fromModelName type: String) -> [String: Any]? {
+        var params: [String: Any] = [:];
+        
+        var data: [String: Any] = [:];
+        data["type"] = type;
+        
+        var attributes: [String: Any] = [:];
+        for att in self.attributes {
+            if let value = att.value {
+                attributes[att.key] = value;
+            }
+        }
+        
+        var relationships: [String: Any] = [:];
+        for rel in self.relationships {
+            var topLevel: [String: Any] = [:];
+            var data: [String: Any] = [:];
+            data["type"] = rel.value.type.modelName;
+            data["id"] = rel.value.id;
+            topLevel["data"] = data;
+            relationships[rel.key] = topLevel;
+        }
+        
+        data["attributes"] = attributes;
+        data["relationships"] = relationships;
+        params["data"] = data;
+        
+        return params;
+        
+        
+        
+    }
+    
     
     public func encode(with aCoder: NSCoder) {
         let mirror = Mirror(reflecting: self);
@@ -412,30 +462,24 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     }
     
     
-    public init(withJSON json: JSON) {
-        super.init();
-        let mirror = Mirror(reflecting: self);
-        self.initFromMirrorWithJSON(mirror: mirror, json: json);
-        
-        
-        
-    }
-    
-    func initFromMirrorWithJSON(mirror: Mirror, json: JSON) {
-        for child in mirror.children {
-            if let value = child.value as? PSModelValueProtocol {
-                value.setValueFromJSON(json);
-            }
-        }
-        if let parent = mirror.superclassMirror {
-            self.initFromMirrorWithJSON(mirror: parent, json: json);
-        }
-    }
-    
     
     public override init() {
         super.init();
     }
+    
+    
+    open func setUpAttributes(json: JSON) {
+        assertionFailure("Did not override setUpAttributes in model");
+    }
+    
+    open func setUpRelationships(json: JSON) {
+        assertionFailure("Did not override setUpRelationships in model");
+    }
+    
+    public func getRelationshipId(fromKey key: String, fromJSON json: JSON) -> String? {
+        return json["author"]["data"]["id"].string
+    }
+    
     
     /// add a model to the cache
     ///
