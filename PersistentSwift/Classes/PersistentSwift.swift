@@ -390,7 +390,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         return [:];
     }
     
-    open var relationships: [String: (id: String, type: PSCachedModel.Type)] {
+    open var relationships: [String: (ids: [String], type: PSCachedModel.Type)] {
         assertionFailure("You did not override relationships in PSCachedModel");
         return [:];
     }
@@ -419,10 +419,21 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         var relationships: [String: Any] = [:];
         for rel in self.relationships {
             var topLevel: [String: Any] = [:];
-            var data: [String: Any] = [:];
-            data["type"] = rel.value.type.modelName;
-            data["id"] = rel.value.id;
-            topLevel["data"] = data;
+            if rel.value.ids.count == 1 {
+                var data: [String: Any] = [:];
+                data["type"] = rel.value.type.modelName;
+                data["id"] = rel.value.ids[0];
+                topLevel["data"] = data;
+            } else {
+                var data: [[String: Any]] = [];
+                for id in rel.value.ids {
+                    var subData: [String: Any] = [:];
+                    subData["type"] = rel.value.type.modelName;
+                    subData["id"] = id;
+                    data.append(subData);
+                }
+                topLevel["data"] = data;
+            }
             relationships[rel.key] = topLevel;
         }
         
@@ -479,8 +490,22 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         assertionFailure("Did not override setUpRelationships in model");
     }
     
-    public func getRelationshipId(fromKey key: String, fromJSON json: JSON) -> String? {
-        return json["author"]["data"]["id"].string
+    public func getRelationshipIds(fromKey key: String, fromJSON json: JSON) -> [String]? {
+        if let dataArray = json[key]["data"] as? [JSON] {
+            var ids: [String] = [];
+            for data in dataArray {
+                if let i = data["id"].string {
+                    id.append(i);
+                }
+            }
+            return ids;
+        } else if let data = json[key]["data"] as? JSON {
+            if let string = data["id"].string {
+            return [string]
+            }
+        }
+        return nil;
+        
     }
     
     

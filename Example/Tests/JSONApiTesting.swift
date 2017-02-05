@@ -19,15 +19,15 @@ class JSONApiTesting: XCTestCase {
             return "authors";
         }
     }
-    class Articles: PSCachedModel {
+    public class Articles: PSCachedModel {
         
         typealias ArticleService = PSServiceMap<Articles, ArticlesTestData>
         
         override class var modelName: String {
             return "articles";
         }
-        var title: String?
-        var body: String?
+        open var title: String?
+        open var body: String?
         
         
         var authorId: String?
@@ -39,9 +39,9 @@ class JSONApiTesting: XCTestCase {
             ];
         }
         
-        override var relationships: [String: (id: String, type: PSCachedModel.Type)] {
+        override var relationships: [String: (ids: [String], type: PSCachedModel.Type)] {
             return [
-                "author": (id: self.authorId!, type: Author.self)
+                "author": (ids: [self.authorId!], type: Author.self)
             ];
         }
         
@@ -49,11 +49,11 @@ class JSONApiTesting: XCTestCase {
             super.init();
         }
         
-        required init?(coder aDecoder: NSCoder) {
+        required public init?(coder aDecoder: NSCoder) {
             super.init(coder: aDecoder);
         }
         
-        required init?(jsonData: JSON) {
+        required public init?(jsonData: JSON) {
             super.init(jsonData: jsonData);
         }
         
@@ -63,7 +63,7 @@ class JSONApiTesting: XCTestCase {
         }
         
         override func setUpRelationships(json: JSON) {
-            self.authorId = self.getRelationshipId(fromKey: "author", fromJSON: json);
+            self.authorId = self.getRelationshipIds(fromKey: "author", fromJSON: json)![0];
         }
         
     }
@@ -100,12 +100,12 @@ class JSONApiTesting: XCTestCase {
     
     
     func testGetRequest() {
-        
+        PSServiceManager.setBaseUrl("http://www.google.com");
+        PSServiceManager.setIsTesting(true);
         let exp = self.expectation(description: "will get a list of articles");
         
         
         
-        PSServiceManager.setIsTesting(true);
         ArticleService.shared.makeRequestArray(Articles.ArticleService.getList).then(execute: {
             articles -> Void in
             XCTAssertEqual(articles.count, 1)
@@ -122,7 +122,7 @@ class JSONApiTesting: XCTestCase {
     }
     
     func testCreatingPostParams() {
-        PSServiceManager.setBaseUrl("http://google.com");
+        PSServiceManager.setBaseUrl("http://www.google.com");
         PSServiceManager.setIsTesting(true);
         
         let article = Articles();
@@ -146,6 +146,38 @@ class JSONApiTesting: XCTestCase {
         XCTAssertEqual(authorData["type"] as! String, "authors");
         
         
+        
+    }
+    
+    func testCreatingPostMultiRelationshipParams() {
+        class MultiAuthorPost: Articles {
+            override var relationships: [String: (ids: [String], type: PSCachedModel.Type)] {
+                return [
+                    "author": (ids: ["1", "2"], type: Author.self)
+                ];
+            }
+
+        }
+        
+        let article = MultiAuthorPost();
+        article.title = "test title";
+        article.body = "test body";
+        let params = article.getCreateParameters(fromModelName: Articles.modelName);
+        
+        let data = params!["data"]! as! [String: Any];
+        let type = data["type"] as! String;
+        XCTAssertEqual(type, "articles");
+        
+        let attributes = data["attributes"] as! [String: Any];
+        XCTAssertEqual(attributes["title"] as! String, "test title");
+        XCTAssertEqual(attributes["body"] as! String, "test body");
+        
+        let relationships = data["relationships"] as! [String: Any];
+        let author = relationships["author"] as! [String: Any];
+        let authorData = author["data"] as! [[String: Any]];
+        XCTAssertEqual(authorData[0]["id"] as! String, "1");
+        XCTAssertEqual(authorData[1]["id"] as! String, "2");
+        XCTAssertEqual(authorData[0]["type"] as! String, "authors");
         
     }
     
