@@ -18,7 +18,7 @@ public protocol PSCodableEnum {
     init?(rawValue:Int);
     
     init(defaultValue:Any)
-
+    
 }
 
 
@@ -42,16 +42,16 @@ open class PSModelCache {
     
     public static var shared: PSModelCache = PSModelCache();
     public var models: [PSCachedModel.Type] = [];
-
+    
     
     var dictionaryCache: [String: [String: PSCachedModel]] = [:];
     
- 
+    
     public init() {
         
     }
     
-
+    
     /// get models of type from the cache as an array
     ///
     /// - Parameter ofType: the type of object to get ex. SubclassCachedModel.self
@@ -101,17 +101,17 @@ open class PSModelCache {
             assertionFailure("You did not register the model type \(type.modelName)");
             return false;
         }
-
+        
         
         
         let name = type.modelName;
-
+        
         self.createCacheIfNeeded(ofName: name);
         var alreadyInCache: Bool = self.isObjectInCache(ofName: name, obj: model);
         self.appendObjectToCache(ofName: name, obj: model);
         
         model.isInCache = true;
-
+        
         return alreadyInCache == false;
     }
     
@@ -242,7 +242,7 @@ public enum PSDataEvent<T: PSCachedModel> {
         case .dataUpdated(let data):
             return data;
             break;
-        
+            
         }
     }
     
@@ -348,7 +348,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         }
     }
     
-
+    
     
     /// helper property, it gets all of the cached models of this type from the model cache
     open class var models: [PSCachedModel] {
@@ -397,6 +397,9 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     
     required public init?(json: JSON) {
         super.init();
+        if let id = json["id"].string {
+            self.id = id;
+        }
         let attributes = json["attributes"];
         self.setUpAttributes(json: attributes);
         let relationships = json["relationships"];
@@ -464,10 +467,10 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
                     if value is NSNull {
                         print("value for key \(name) is NSNULL, not caching it");
                     } else {
-                         aCoder.encode(child.value as? Any, forKey: name);            
+                        aCoder.encode(child.value as? Any, forKey: name);
                     }
                 }
-               
+                
             }
         }
         if let parent = mirror.superclassMirror {
@@ -491,7 +494,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     }
     
     public func getRelationshipIds(fromKey key: String, fromJSON json: JSON) -> [String]? {
-        if let dataArray = json[key]["data"] as? [JSON] {
+        if let dataArray = json[key]["data"].array {
             var ids: [String] = [];
             for data in dataArray {
                 if let i = data["id"].string {
@@ -501,7 +504,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
             return ids;
         } else if let data = json[key]["data"] as? JSON {
             if let string = data["id"].string {
-            return [string]
+                return [string]
             }
         }
         return nil;
@@ -530,7 +533,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
     public func addToCache() -> Bool {
         return self.forTestingAddToCache(cache: PSModelCache.shared);
-
+        
     }
     
     
@@ -549,7 +552,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
                     if enumMirror.displayStyle == Mirror.DisplayStyle.enum {
                         print("FOUND AN ENUM TO DECODE, THIS IS NOT POSSIBLE YET");
                     } else {
-                    
+                        
                         if let value = aDecoder.decodeObject(forKey: name) as? Any {
                             if value is NSNull {
                                 print("the value for \(name) was NSNull, we are not loading it from the cache");
@@ -571,7 +574,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         }
     }
     
-  
+    
     
     
 }

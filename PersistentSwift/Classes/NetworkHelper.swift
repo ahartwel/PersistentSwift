@@ -49,7 +49,7 @@ struct AuthPlugin: PluginType {
         
         if let token = tokenClosure() {
             var request = request
-            request.addValue("Token " + token, forHTTPHeaderField: "Authorization")
+            request.addValue("Bearer " + token, forHTTPHeaderField: "Authorization")
             return request
         }
         else {
@@ -80,7 +80,7 @@ extension PSServiceMap: TargetType {
         case .createObject(let obj):
             return "/\(T.modelName)";
         case .updateObject(let obj):
-            return "/\(T.modelName)";
+            return "/\(T.modelName)/\(obj.id)";
         case .deleteObject(let obj):
             return "/\(T.modelName)/\(obj.id)";
         }
@@ -92,7 +92,7 @@ extension PSServiceMap: TargetType {
         case .getList:
             return .get;
         case .createObject( _):
-        return .post;
+            return .post;
         case .updateObject(obj: _):
             return .patch;
         case .deleteObject( _):
@@ -279,7 +279,7 @@ open class PSService<T: TargetType, V: PSCachedModel> {
                         Background.runInMainThread {
                             promise.fulfill();
                         }
-                    
+                        
                     }catch {
                         print(error);
                         Background.runInMainThread {
@@ -309,6 +309,8 @@ open class PSService<T: TargetType, V: PSCachedModel> {
                 switch result {
                 case let .success(moyaResponse):
                     do {
+                        let json = JSON(data: moyaResponse.data);
+                        print(json);
                         let objects = try moyaResponse.map(to: [V.self]) as! [V];
                         Background.runInMainThread {
                             promise.fulfill(objects);
