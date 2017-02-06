@@ -232,6 +232,7 @@ class Tests: XCTestCase {
         model2.id = "10000";
         model2.name = "what";
         
+        
         let models = PSDataManager<TestModel>.getModels(byValue: "WHAT WHAT", forKey: "name", ofType: String.self);
         
         XCTAssert(models.count == 1);

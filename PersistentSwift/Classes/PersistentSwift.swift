@@ -7,7 +7,7 @@
 //
 import Foundation
 import SwiftyJSON
-
+import PromiseKit
 
 
 
@@ -174,9 +174,41 @@ open class PSModelCache {
 }
 
 
+open class PSNetworkManager<T: PSCachedModel, TestingData: TestData> {
+    open static func saveNewObject(obj: T) -> Promise<T> {
+        typealias APIMap = PSServiceMap<T, TestingData>;
+        let service = PSService<APIMap, T>();
+        let request = APIMap.createObject(obj: obj);
+        return service.makeRequest(request);
+    }
+    
+    open static func updateObject(obj: T) -> Promise<T> {
+        typealias APIMap = PSServiceMap<T, TestingData>;
+        let service = PSService<APIMap, T>();
+        let request = APIMap.updateObject(obj: obj);
+        return service.makeRequest(request);
+    }
+    
+    open static func deleteObject(obj: T) -> Promise<T> {
+        typealias APIMap = PSServiceMap<T, TestingData>;
+        let service = PSService<APIMap, T>();
+        let request = APIMap.deleteObject(obj: obj);
+        return service.makeRequest(request);
+    }
+    
+    
+    open static func getListOfObjects() -> Promise<T> {
+        typealias APIMap = PSServiceMap<T, NoTestData>;
+        let service = PSService<APIMap, T>();
+        let request = APIMap.getList;
+        return service.makeRequest(request);
+    }
+    
+}
+
 open class PSDataManager<T: PSCachedModel> {
     
-    
+   
     
     open static func getModelsArray() -> [T] {
         return T.models as! [T];
@@ -205,6 +237,9 @@ open class PSDataManager<T: PSCachedModel> {
         return foundModels;
         
     }
+    
+    
+    
     
     
     
@@ -510,6 +545,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
         return nil;
         
     }
+  
     
     
     //FOR TESTING PURPOSES ONLY

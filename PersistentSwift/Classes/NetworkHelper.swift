@@ -233,6 +233,9 @@ open class PSService<T: TargetType, V: PSCachedModel> {
         
     }
     
+   
+
+    
     //a wrapper for a request which returns a single object, type is the type of request, defined in the API map
     public func makeRequest(_ type: T) -> Promise<V> {
         let promise = Promise<V>.pending();

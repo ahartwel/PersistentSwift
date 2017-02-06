@@ -87,6 +87,9 @@ class JSONApiTesting: XCTestCase {
         static var shared: ArticleService = ArticleService();
     }
 
+    class ArticlesNetworkManager: PSNetworkManager<Articles, ArticlesTestData> {
+    }
+    
     
     override func setUp() {
         super.setUp()
@@ -185,10 +188,40 @@ class JSONApiTesting: XCTestCase {
         let exp = self.expectation(description: "will create an article");
         PSServiceManager.setBaseUrl("http://google.com");
         PSServiceManager.setIsTesting(true);
+        
         let article = Articles();
         article.title = "test title";
         article.body = "test body";
         article.authorId = "test id";
+        
+        
+        
+        ArticlesNetworkManager.saveNewObject(obj: article).then(execute: {
+            article -> Void in
+            XCTAssertEqual(article.authorId, "test id");
+            XCTAssertEqual(article.title, "test title");
+            XCTAssertEqual(article.body, "test body");
+            exp.fulfill();
+        }).catch {
+            error in
+            XCTAssert(false, "request failed");
+
+      
+        }
+        /*
+        PSDataManager<Articles, ArticlesTestData>.saveNewObject(obj: article).then {
+            article -> Void in
+            XCTAssertEqual(article.authorId, "test id");
+            XCTAssertEqual(article.title, "test title");
+            XCTAssertEqual(article.body, "test body");
+            exp.fulfill();
+
+            }.catch {
+                error in
+                XCTAssert(false, "request failed");
+        }
+ */
+        /*
         ArticleService.shared.makeRequest(.createObject(obj: article)).then {
             article -> Void in
             XCTAssertEqual(article.authorId, "test id");
@@ -199,8 +232,9 @@ class JSONApiTesting: XCTestCase {
                 error in
                 XCTAssert(false, "request failed");
         }
+ */
         
-        self.waitForExpectations(timeout: 5, handler: nil);
+        self.waitForExpectations(timeout: 30, handler: nil);
         
     }
     
