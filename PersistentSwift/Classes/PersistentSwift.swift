@@ -175,13 +175,7 @@ open class PSModelCache {
         self.dictionaryCache[type.modelName] = [:];
     }
     
-    public func removeModelFromCache(id: String, ofType type: PSCachedModel.Type) {
-        if let obj = self.dictionaryCache[type.modelName] as? PSCachedModel {
-            PSDataEvent.deleteData(obj, eventHandler: &type.eventHandler);
-        }
-        self.dictionaryCache[type.modelName]?.removeValue(forKey: id);
-    }
-    
+   
     
     
 }
@@ -251,8 +245,31 @@ open class PSDataManager<T: PSCachedModel> {
         
     }
     
+    open static func removeModelFromCache(id: String) {
+        if let obj = PSModelCache.shared.dictionaryCache[T.modelName] as? PSCachedModel {
+            PSDataEvent.deleteData(obj, eventHandler: &T.eventHandler);
+        }
+        PSModelCache.shared.dictionaryCache[T.modelName]?.removeValue(forKey: id);
+    }
     
     
+    /// add a model to the cache
+    ///
+    /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
+    open static func addData(obj: T) -> Bool {
+        if obj.isInCache == true {
+            return false;
+        }
+        
+        let addedToCache = PSModelCache.shared.addModelToCache(model: obj);
+        if addedToCache {
+            PSDataEvent.addData(obj, eventHandler: &T.eventHandler);
+        } else {
+            PSDataEvent.updateData(obj, eventHandler: &T.eventHandler);
+        }
+        
+        return addedToCache;
+    }
     
     
     
@@ -602,6 +619,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     /// add a model to the cache
     ///
     /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
+    @available(*, deprecated, message: "Data events not firing properly in all situations")
     public func addToCache() -> Bool {
         return self.forTestingAddToCache(cache: PSModelCache.shared);
         

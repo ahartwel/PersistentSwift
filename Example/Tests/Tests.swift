@@ -185,7 +185,7 @@ class Tests: XCTestCase {
         newModel.name = "testtest";
         newModel.isLive = false;
         newModel.number = 10;
-        newModel.forTestingAddToCache(cache: cache);
+        PSDataManager<TestModel>.addData(obj: newModel);
         
         let models: [TestModel] = TestModel.models as! [TestModel];
         if let model = models[0] as? TestModel {
@@ -311,7 +311,7 @@ class Tests: XCTestCase {
         
         let model1 = TestModel();
         model1.id = "100";
-        _  = model1.addToCache();
+        PSDataManager<TestModel>.addData(obj: model1);
         
         let modelCount = TestModel.models.count;
         
@@ -351,9 +351,8 @@ class Tests: XCTestCase {
 
         
         XCTAssertEqual(TestModel.models.count, 1);
-        PSModelCache.shared.removeModelFromCache(id: "0000", ofType: TestModel.self)
-        PSModelCache.shared.removeModelFromCache(id: "100", ofType: TestModel.self);
-        
+        PSDataManager<TestModel>.removeModelFromCache(id: "0000");
+        PSDataManager<TestModel>.removeModelFromCache(id: "100");
         XCTAssertEqual(TestModel.models.count, 0);
         
     }
