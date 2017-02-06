@@ -292,6 +292,41 @@ class Tests: XCTestCase {
     }
     
     
+    func testClearingCache() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        _  = model1.addToCache();
+        
+        let modelCount = TestModel.models.count;
+        
+        PSModelCache.shared.clearCache(ofType: TestModel.self);
+        
+        let newModelCount = TestModel.models.count;
+        
+        XCTAssertEqual(modelCount, 1);
+        XCTAssertEqual(newModelCount, 0);
+        
+        
+        
+
+    }
+    
     func testDuplicateObjectsBehaivor() {
         var cache = PSModelCache.shared;
 

@@ -171,6 +171,11 @@ open class PSModelCache {
         self.dictionaryCache = [:];
     }
     
+    public func clearCache(ofType type: PSCachedModel.Type) {
+        self.dictionaryCache[type.modelName] = [:];
+    }
+    
+    
 }
 
 
