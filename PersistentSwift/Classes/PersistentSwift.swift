@@ -533,7 +533,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
             var ids: [String] = [];
             for data in dataArray {
                 if let i = data["id"].string {
-                    id.append(i);
+                    ids.append(i);
                 }
             }
             return ids;
