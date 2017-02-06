@@ -175,6 +175,11 @@ open class PSModelCache {
         self.dictionaryCache[type.modelName] = [:];
     }
     
+    public func removeModelFromCache(id: String, ofType type: PSCachedModel.Type) {
+        self.dictionaryCache[type.modelName]?.removeValue(forKey: id);
+    }
+    
+    
     
 }
 
