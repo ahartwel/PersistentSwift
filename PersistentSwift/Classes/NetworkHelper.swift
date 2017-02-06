@@ -244,8 +244,6 @@ open class PSService<T: TargetType, V: PSCachedModel> {
                 result in
                 switch result {
                 case let .success(moyaResponse):
-                    let json = JSON(data: moyaResponse.data);
-                    print(json);
                     do {
                         let object = try moyaResponse.map(to: V.self);
                         Background.runInMainThread {
@@ -312,8 +310,6 @@ open class PSService<T: TargetType, V: PSCachedModel> {
                 switch result {
                 case let .success(moyaResponse):
                     do {
-                        let json = JSON(data: moyaResponse.data);
-                        print(json);
                         let objects = try moyaResponse.map(to: [V.self]) as! [V];
                         Background.runInMainThread {
                             promise.fulfill(objects);
