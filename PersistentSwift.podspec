@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'PersistentSwift'
-  s.version          = '0.2.3'
+  s.version          = '0.2.4'
   s.summary          = 'A model cache for swift'
 
 # This description is used to generate tags and improve search results.
