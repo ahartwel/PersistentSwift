@@ -189,19 +189,19 @@ open class PSNetworkManager<T: PSCachedModel, TestingData: TestData> {
         return service.makeRequest(request);
     }
     
-    open static func deleteObject(obj: T) -> Promise<T> {
+    open static func deleteObject(obj: T) -> Promise<Void> {
         typealias APIMap = PSServiceMap<T, TestingData>;
         let service = PSService<APIMap, T>();
         let request = APIMap.deleteObject(obj: obj);
-        return service.makeRequest(request);
+        return service.makeRequestNoObjectReturn(request);
     }
     
     
-    open static func getListOfObjects() -> Promise<T> {
+    open static func getListOfObjects() -> Promise<[T]> {
         typealias APIMap = PSServiceMap<T, NoTestData>;
         let service = PSService<APIMap, T>();
         let request = APIMap.getList;
-        return service.makeRequest(request);
+        return service.makeRequestArray(request);
     }
     
 }
