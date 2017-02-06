@@ -327,6 +327,37 @@ class Tests: XCTestCase {
 
     }
     
+    
+    func testRemovingSingleObject() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        _  = model1.addToCache();
+
+        
+        XCTAssertEqual(TestModel.models.count, 1);
+        PSModelCache.shared.removeModelFromCache(id: "0000", ofType: TestModel.self)
+        PSModelCache.shared.removeModelFromCache(id: "100", ofType: TestModel.self);
+        
+        XCTAssertEqual(TestModel.models.count, 0);
+        
+    }
+    
     func testDuplicateObjectsBehaivor() {
         var cache = PSModelCache.shared;
 

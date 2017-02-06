@@ -176,6 +176,9 @@ open class PSModelCache {
     }
     
     public func removeModelFromCache(id: String, ofType type: PSCachedModel.Type) {
+        if let obj = self.dictionaryCache[type.modelName] as? PSCachedModel {
+            PSDataEvent.deleteData(obj, eventHandler: &type.eventHandler);
+        }
         self.dictionaryCache[type.modelName]?.removeValue(forKey: id);
     }
     
@@ -272,6 +275,7 @@ public enum PSDataEvent<T: PSCachedModel> {
     case none
     case newDataAdded(T)
     case dataUpdated(T)
+    case dataDeleted(T)
     
     /// get the data associated with the event
     ///
@@ -285,6 +289,9 @@ public enum PSDataEvent<T: PSCachedModel> {
             return data;
             break;
         case .dataUpdated(let data):
+            return data;
+            break;
+        case .dataDeleted(let data):
             return data;
             break;
             
@@ -312,6 +319,16 @@ public enum PSDataEvent<T: PSCachedModel> {
         }
     }
     
+    public func isDataDeleted() -> Bool {
+        switch self {
+        case .dataDeleted:
+            return true;
+        default:
+            return false;
+            break;
+        }
+    }
+    
     /// add data to the data store
     ///
     /// - Parameters:
@@ -333,6 +350,14 @@ public enum PSDataEvent<T: PSCachedModel> {
         eventHandler.set(.dataUpdated(data));
     }
     
+    /// called when data is deleted from the data store
+    ///
+    /// - Parameters:
+    ///   - data: the object that is being deleted
+    ///   - eventHandler: the event handler htat will alert objects about the update
+    static func deleteData(_ data: T, eventHandler: inout DataBindType<PSDataEvent>) {
+        eventHandler.set(.dataDeleted(data));
+    }
     
     
 }
