@@ -171,6 +171,13 @@ open class PSModelCache {
         self.dictionaryCache = [:];
     }
     
+    public func clearCache(ofType type: PSCachedModel.Type) {
+        self.dictionaryCache[type.modelName] = [:];
+    }
+    
+   
+    
+    
 }
 
 
@@ -238,8 +245,31 @@ open class PSDataManager<T: PSCachedModel> {
         
     }
     
+    open static func removeModelFromCache(id: String) {
+        if let obj = PSModelCache.shared.dictionaryCache[T.modelName] as? PSCachedModel {
+            PSDataEvent.deleteData(obj, eventHandler: &T.eventHandler);
+        }
+        PSModelCache.shared.dictionaryCache[T.modelName]?.removeValue(forKey: id);
+    }
     
     
+    /// add a model to the cache
+    ///
+    /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
+    open static func addData(obj: T) -> Bool {
+        if obj.isInCache == true {
+            return false;
+        }
+        
+        let addedToCache = PSModelCache.shared.addModelToCache(model: obj);
+        if addedToCache {
+            PSDataEvent.addData(obj, eventHandler: &T.eventHandler);
+        } else {
+            PSDataEvent.updateData(obj, eventHandler: &T.eventHandler);
+        }
+        
+        return addedToCache;
+    }
     
     
     
@@ -262,6 +292,7 @@ public enum PSDataEvent<T: PSCachedModel> {
     case none
     case newDataAdded(T)
     case dataUpdated(T)
+    case dataDeleted(T)
     
     /// get the data associated with the event
     ///
@@ -275,6 +306,9 @@ public enum PSDataEvent<T: PSCachedModel> {
             return data;
             break;
         case .dataUpdated(let data):
+            return data;
+            break;
+        case .dataDeleted(let data):
             return data;
             break;
             
@@ -302,6 +336,16 @@ public enum PSDataEvent<T: PSCachedModel> {
         }
     }
     
+    public func isDataDeleted() -> Bool {
+        switch self {
+        case .dataDeleted:
+            return true;
+        default:
+            return false;
+            break;
+        }
+    }
+    
     /// add data to the data store
     ///
     /// - Parameters:
@@ -323,6 +367,14 @@ public enum PSDataEvent<T: PSCachedModel> {
         eventHandler.set(.dataUpdated(data));
     }
     
+    /// called when data is deleted from the data store
+    ///
+    /// - Parameters:
+    ///   - data: the object that is being deleted
+    ///   - eventHandler: the event handler htat will alert objects about the update
+    static func deleteData(_ data: T, eventHandler: inout DataBindType<PSDataEvent>) {
+        eventHandler.set(.dataDeleted(data));
+    }
     
     
 }
@@ -533,7 +585,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
             var ids: [String] = [];
             for data in dataArray {
                 if let i = data["id"].string {
-                    id.append(i);
+                    ids.append(i);
                 }
             }
             return ids;
@@ -567,6 +619,7 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     /// add a model to the cache
     ///
     /// - Returns: returns true if the model was added to the cache, false if it was already in the cache
+    @available(*, deprecated, message: "Data events not firing properly in all situations")
     public func addToCache() -> Bool {
         return self.forTestingAddToCache(cache: PSModelCache.shared);
         

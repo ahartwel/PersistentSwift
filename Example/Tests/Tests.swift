@@ -185,7 +185,7 @@ class Tests: XCTestCase {
         newModel.name = "testtest";
         newModel.isLive = false;
         newModel.number = 10;
-        newModel.forTestingAddToCache(cache: cache);
+        PSDataManager<TestModel>.addData(obj: newModel);
         
         let models: [TestModel] = TestModel.models as! [TestModel];
         if let model = models[0] as? TestModel {
@@ -291,6 +291,71 @@ class Tests: XCTestCase {
         
     }
     
+    
+    func testClearingCache() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        PSDataManager<TestModel>.addData(obj: model1);
+        
+        let modelCount = TestModel.models.count;
+        
+        PSModelCache.shared.clearCache(ofType: TestModel.self);
+        
+        let newModelCount = TestModel.models.count;
+        
+        XCTAssertEqual(modelCount, 1);
+        XCTAssertEqual(newModelCount, 0);
+        
+        
+        
+
+    }
+    
+    
+    func testRemovingSingleObject() {
+        class TestModel: PSCachedModel {
+            
+            override class var modelName: String {
+                get {
+                    return "Test Model"
+                }
+            }
+            
+            var name: String? = "Hello";
+            var isLive: Bool = true;
+            var number: Double = 1000;
+            
+        }
+        let modelArray: [PSCachedModel.Type] = [TestModel.self];
+        PSModelCache.shared.registerModels(models: modelArray);
+        
+        let model1 = TestModel();
+        model1.id = "100";
+        _  = model1.addToCache();
+
+        
+        XCTAssertEqual(TestModel.models.count, 1);
+        PSDataManager<TestModel>.removeModelFromCache(id: "0000");
+        PSDataManager<TestModel>.removeModelFromCache(id: "100");
+        XCTAssertEqual(TestModel.models.count, 0);
+        
+    }
     
     func testDuplicateObjectsBehaivor() {
         var cache = PSModelCache.shared;
