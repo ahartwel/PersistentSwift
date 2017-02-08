@@ -370,8 +370,8 @@ open class PSModelValue<T: Any>: PSModelValueProtocol {
     
     static var eventHandler: DataBindType<PSDataEvent<PSCachedModel>> = DataBindType<PSDataEvent<PSCachedModel>>(value: .none);
     
-    open static func addCallbackOnCacheChange(_ callback: @escaping (PSDataEvent<PSCachedModel>) -> ()) {
-        self.eventHandler.addBindee(callback);
+    open static func addCallbackOnCacheChange(_ callback: inout (PSDataEvent<PSCachedModel>) -> ()) {
+        self.eventHandler.addBindee(&callback);
     }
     
     

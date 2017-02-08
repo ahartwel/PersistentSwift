@@ -363,7 +363,7 @@ class Tests: XCTestCase {
             }
         }
         
-        TestModel.addCallbackOnCacheChange(onDataAdded);
+        TestModel.addCallbackOnCacheChange(&onDataAdded);
         model1.forTestingAddToCache(cache: cache);
         
         self.waitForExpectations(timeout: 4, handler: nil);

@@ -107,9 +107,7 @@ class JSONApiTesting: XCTestCase {
         PSServiceManager.setIsTesting(true);
         let exp = self.expectation(description: "will get a list of articles");
         
-        
-        
-        ArticleService.shared.makeRequestArray(Articles.ArticleService.getList).then(execute: {
+        ArticlesNetworkManager.getListOfObjects().then(execute: {
             articles -> Void in
             XCTAssertEqual(articles.count, 1)
             XCTAssertEqual(articles[0].title, "JSON API paints my bikeshed!");

@@ -10,46 +10,38 @@ import UIKit
 
 
 
-class DataBind<T> {
-    static func getBindee(_ listener: DataBindListener<T>) -> DataBindee<T> {
-        let bindee = DataBindee<T>(callback: listener);
-        return bindee;
-    }
-    
-    static func getBindee(_ listener: DataBindListenerOldAndNew<T>) -> DataBindeeOldAndNew<T> {
-        let bindee = DataBindeeOldAndNew<T>(callback: listener);
-        return bindee;
-    }
-    
-}
 
-class DataBindListener<A> {
-    var callback: (A) -> ()
-    init (listener: @escaping (A) -> ()) {
+
+open class DataBindee<A> {
+    typealias DataBindCallback = (A) -> ()
+    
+    /// The callback that will be called when a data bind type gets set. The function has the value as the parameter.
+    var callback: ((A) -> ())?
+    var oldValueCellback: ((A, A) -> ())? //new value, old value
+    
+    /**
+     Creates a Listener
+     
+     - parameter listener: A closure/function that takes the DataBindType Value as a parameter
+     
+     - returns: A Data Bind Listener
+     */
+    init (listener: inout (A) -> ()) {
+        //self.callback = listener;
+        
+        
         self.callback = listener;
-    }
-}
-
-class DataBindListenerOldAndNew<A> {
-    var callback: (A, A) -> ()
-    init (listener: @escaping (A, A) -> ()) {
-        self.callback = listener;
-    }
-}
-
-
-class DataBindee<T> {
-    weak var listener: DataBindListener<T>?
-    init(callback: DataBindListener<T>) {
-        self.listener = callback;
+        
+        
     }
     
-}
-
-class DataBindeeOldAndNew<T> {
-    weak var listener: DataBindListenerOldAndNew<T>?
-    init(callback: DataBindListenerOldAndNew<T>) {
-        self.listener = callback;
+    init (listener: inout (A,A) -> ()) {
+        //self.callback = listener;
+        
+        
+        self.oldValueCellback = listener;
+        
+        
     }
     
 }
@@ -68,16 +60,21 @@ class DataBindeeOldAndNew<T> {
  
  override func loadView() {
  super.loadView();
- self.model.dataBindedInt.addBindee({
- [unowned self] newValue in
- self.onDataBindedIntChange(newInt: newValue);
- });
+ self.model.dataBindedInt.addBindee(&self.onDataBindedIntChange);
+ self.model.dataBindedInt.addBindee(&self.onDataBindedIntChangeWithOldValue);
  }
  
  
- func onDataBindedIntChange(newInt: Int) {
- EWLog.shared.logVerbose("got the new int");
+ var onDataBindedIntChange: DataBindCallback<Int> = {
+ newValue in
+ print("got the new value \(newValue)");
  }
+ 
+ var onDataBindedIntChangeWithOldValue: DataBindCallbackWithOldValue<Int> = {
+ newValue, oldValue in
+ print("got the new value \(newValue) got the oldValue \(oldValue)");
+ }
+ 
  
  
  }
@@ -88,76 +85,72 @@ class DataBindeeOldAndNew<T> {
  */
 
 
+public typealias DataBindCallback<T> = (T) -> ()
+public typealias DataBindCallbackWithOldValue<T> = (T,T) -> ()
 
-class DataBindType<T> {
-    
-    private var listeners: [DataBindListener<T>] = [];
-    private var listenersOldAndNew: [DataBindListenerOldAndNew<T>] = [];
+open class DataBindType<T> {
     
     
-    var value: T {
-        didSet {
-            if !dontRun {
-                for bindee in bindees {
-                    bindee.listener?.callback(self.value);
-                }
-                for bindee in bindessOldAndNew {
-                    bindee.listener?.callback(self.value, oldValue);
-                }
-            }
-            self.dontRun = false;
-        }
-    };
-    
+    private var value: T
     var bindees: [DataBindee<T>] = [];
-    var bindessOldAndNew: [DataBindeeOldAndNew<T>] = [];
     var dontRun: Bool = false;
     
-    init(value: T) {
+    
+    
+    public init(value: T) {
         self.value = value;
     }
     
-    func addBindee(_ callback: @escaping (_ newValue: T, _ oldValue: T) -> ()) {
-        let listener: DataBindListenerOldAndNew<T> = DataBindListenerOldAndNew<T>(listener: callback);
-        self.listenersOldAndNew.append(listener);
-        let bindee = DataBind.getBindee(listener);
-        self.bindessOldAndNew.append(bindee);
+    public func addBindee(_ callback: inout (T) -> ()) {
+        
+        let listener: DataBindee = DataBindee<T>(listener: &callback);
+        self.bindees.append(listener);
+        
+        
     }
     
-    func addBindee(_ callback: @escaping (_ newValue: T, _ oldValue: T) -> (), runListener: Bool) {
-        self.addBindee(callback);
+    public func addBindee(_ callback: inout (T) -> (), runListener: Bool) {
+        self.addBindee(&callback);
         if (runListener) {
-            callback(self.value, self.value);
+            callback(self.value)
         }
     }
     
-    
-    
-    func addBindee(_ callback: @escaping (T) -> ()) {
-        let listener: DataBindListener<T> = DataBindListener<T>(listener: callback);
-        self.listeners.append(listener);
-        let bindee = DataBind.getBindee(listener);
-        self.bindees.append(bindee);
+    public func addBindee(_ callback: inout (T,T) -> ()) {
+        
+        let listener: DataBindee = DataBindee<T>(listener: &callback);
+        self.bindees.append(listener);
+        
+        
     }
     
-    func addBindee(_ callback: @escaping (T) -> (), runListener: Bool) {
-        self.addBindee(callback);
+    public func addBindee(_ callback: inout (T,T) -> (), runListener: Bool) {
+        self.addBindee(&callback);
         if (runListener) {
-            callback(self.value);
+            callback(self.value, self.value)
         }
     }
     
-    func set(_ value: T) {
+    public func set(_ value: T) {
+        let oldValue = self.value;
         self.value = value;
+        if !dontRun {
+            for bindee in bindees {
+                bindee.callback?(value);
+                bindee.oldValueCellback?(value, oldValue);
+            }
+        }
+        self.dontRun = false;
+        
     }
     
-    func set(_ value: T, dontRun: Bool) {
+    public func set(_ value: T, dontRun: Bool) {
         self.dontRun = dontRun;
         self.value = value;
     }
     
     
-    func get() -> T {
+    public func get() -> T {
         return self.value;
     }
     
