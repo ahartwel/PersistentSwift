@@ -311,6 +311,7 @@ class Tests: XCTestCase {
         
         let model1 = TestModel();
         model1.id = "100";
+        
         PSDataManager<TestModel>.addData(obj: model1);
         
         let modelCount = TestModel.models.count;
@@ -358,7 +359,7 @@ class Tests: XCTestCase {
     }
     
     func testDuplicateObjectsBehaivor() {
-        var cache = PSModelCache.shared;
+        let cache = PSModelCache.shared;
 
         class TestModel: PSCachedModel {
             
@@ -417,7 +418,7 @@ class Tests: XCTestCase {
         }
         let modelArray: [PSCachedModel.Type] = [TestModel.self];
         cache.registerModels(models: modelArray);
-        var model1 = TestModel();
+        let model1 = TestModel();
         model1.id = "100";
         
         var onDataAdded: (PSDataEvent<PSCachedModel>) -> () = {
@@ -429,7 +430,7 @@ class Tests: XCTestCase {
         }
         
         TestModel.addCallbackOnCacheChange(&onDataAdded);
-        model1.forTestingAddToCache(cache: cache);
+        _ = model1.forTestingAddToCache(cache: cache);
         
         self.waitForExpectations(timeout: 4, handler: nil);
         
@@ -438,9 +439,9 @@ class Tests: XCTestCase {
     
 
     func testJSONValueCreation() {
-        var cache = PSModelCache();
+        let cache = PSModelCache();
 
-        var value: PSModelValue<Int> = PSModelValue<Int>(jsonPath: "test.inside.int");
+        let value: PSModelValue<Int> = PSModelValue<Int>(jsonPath: "test.inside.int");
         let jsonString = "{" +
         "\"test\": {" +
             "\"inside\": {" +

@@ -69,6 +69,15 @@ class JSONApiTesting: XCTestCase {
     }
     
     class ArticlesTestData: TestData {
+        
+        public static var getListPaginatedTestData: Data {
+            return Data();
+        }
+
+        public static var getListWithParamsTestData: Data {
+            return Data();
+        }
+
         public static var deleteTestData: Data {
             return Data();
         }
@@ -81,10 +90,6 @@ class JSONApiTesting: XCTestCase {
             return "{\n  \"data\": {\n    \"type\": \"articles\",\n    \"attributes\": {\n      \"title\": \"test title\",\n      \"body\": \"test body\"\n    },\n    \"relationships\": {\n      \"author\": {\n        \"data\": { \"type\": \"authors\", \"id\": \"test id\" }\n      }\n    }\n  }\n}".data(using: String.Encoding.utf8)!;
         }
         
-    }
-    
-    class ArticleService: PSService<Articles.ArticleService, Articles> {
-        static var shared: ArticleService = ArticleService();
     }
 
     class ArticlesNetworkManager: PSNetworkManager<Articles, ArticlesTestData> {
@@ -244,7 +249,7 @@ class JSONApiTesting: XCTestCase {
         article.title = "test title";
         article.body = "test body";
         article.authorId = "test id";
-        ArticleService.shared.makeRequestNoObjectReturn(.deleteObject(obj: article)).then {
+        ArticlesNetworkManager.deleteObject(obj: article).then {
             exp.fulfill();
             }.catch {_ in 
                 XCTAssert(false, "this request never finished");

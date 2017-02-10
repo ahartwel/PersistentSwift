@@ -14,7 +14,7 @@ import PersistentSwift
 import Alamofire
 
 
-public extension Response {
+extension Response {
     
     /// Maps data received from the signal into an object which implements the ALSwiftyJSONAble protocol.
     /// If the conversion fails, the signal errors.
@@ -60,10 +60,13 @@ struct AuthPlugin: PluginType {
 
 public enum PSServiceMap<T: PSCachedModel, D: TestData> {
     case getList
+    case getListWith(params: [String: Any])
+    case getListPaginated(page: Int, limit: Int, params: [String: Any]);
     case createObject(obj: T)
     case updateObject(obj: T)
     case deleteObject(obj: T)
 }
+
 
 
 extension PSServiceMap: TargetType {
@@ -77,6 +80,10 @@ extension PSServiceMap: TargetType {
         switch self {
         case .getList:
             return "/\(T.modelName)";
+        case .getListWith( _):
+            return "\(T.modelName)";
+        case .getListPaginated( _):
+            return "\(T.modelName)";
         case .createObject(let obj):
             return "/\(T.modelName)";
         case .updateObject(let obj):
@@ -90,6 +97,10 @@ extension PSServiceMap: TargetType {
     public var method: Moya.Method {
         switch self {
         case .getList:
+            return .get;
+        case .getListWith( _):
+            return .get;
+        case .getListPaginated( _):
             return .get;
         case .createObject( _):
             return .post;
@@ -105,6 +116,13 @@ extension PSServiceMap: TargetType {
         switch self {
         case .getList:
             return nil;
+        case .getListWith(let params):
+            return params;
+        case .getListPaginated(let page, let limit, let params):
+            var p = params;
+            p["page"] = page;
+            p["per_page"] = limit;
+            return p;
         case .createObject(let obj):
             return obj.getCreateParameters(fromModelName: T.modelName);
         case .updateObject(let obj):
@@ -118,6 +136,10 @@ extension PSServiceMap: TargetType {
     public var parameterEncoding: ParameterEncoding {
         switch self {
         case .getList:
+            return URLEncoding.default;
+        case .getListWith( _):
+            return URLEncoding.default;
+        case .getListPaginated( _):
             return URLEncoding.default;
         case .createObject( _):
             return JSONEncoding.default;
@@ -133,6 +155,10 @@ extension PSServiceMap: TargetType {
         switch self {
         case .getList:
             return D.getListTestData;
+        case .getListWith( _):
+            return D.getListWithParamsTestData;
+        case .getListPaginated( _):
+            return D.getListPaginatedTestData;
         case .createObject( _):
             return D.getCreateTestData;
         case .updateObject( _):
@@ -152,7 +178,22 @@ extension PSServiceMap: TargetType {
 
 
 
+
+
+public protocol TestData {
+    static var getListTestData: Data { get }
+    static var getListWithParamsTestData: Data { get }
+    static var getCreateTestData: Data { get }
+    static var deleteTestData: Data { get }
+    static var getListPaginatedTestData: Data { get }
+}
+
 open class NoTestData: TestData {
+    
+    public static var getListWithParamsTestData: Data {
+        return Data();
+    }
+    
     public static var getListTestData: Data {
         return Data();
     }
@@ -165,173 +206,15 @@ open class NoTestData: TestData {
         return Data();
     }
     
+    public static var getListPaginatedTestData: Data {
+        return Data();
+    }
+    
 }
 
-public protocol TestData {
-    static var getListTestData: Data { get }
-    static var getCreateTestData: Data { get }
-    static var deleteTestData: Data { get }
-}
 
 
 struct ServiceConstants {
     var baseUrl: String
 }
 
-open class PSServiceManager {
-    
-    static var constants = ServiceConstants(baseUrl: "");
-    static var authToken: String?
-    static var isTesting: Bool = false;
-    open static func setBaseUrl(_ url: String) {
-        PSServiceManager.constants.baseUrl = url;
-    }
-    
-    open static func setAuthToken(token: String) {
-        PSServiceManager.authToken = token;
-    }
-    
-    open static func setIsTesting(_ bool: Bool) {
-        self.isTesting = bool;
-    }
-    
-}
-
-//A Generic class for making network requests (to be subclassed for each section of the API eg. AvatarService, EventService, UserService etc
-open class PSService<T: TargetType, V: PSCachedModel> {
-    
-    var baseUrl: String = "";
-    
-    //the actual object used to make the requests
-    lazy var provider: MoyaProvider<T> = self.getProvider();
-    var authToken: String?
-    func getProvider() -> MoyaProvider<T> {
-        if PSServiceManager.isTesting {
-            let provider = MoyaProvider<T>(stubClosure: {
-                _ in
-                return .immediate;
-            }, plugins: [
-                AuthPlugin(tokenClosure: {
-                    
-                    return PSServiceManager.authToken
-                    
-                })
-                ]);
-            return provider;
-        } else {
-            
-            let provider = MoyaProvider<T>(
-                plugins: [
-                    AuthPlugin(tokenClosure: { return PSServiceManager.authToken })
-                ]
-            )
-            return provider;
-        }
-    }
-    
-    public init() {
-        
-    }
-    
-   
-
-    
-    //a wrapper for a request which returns a single object, type is the type of request, defined in the API map
-    public func makeRequest(_ type: T) -> Promise<V> {
-        let promise = Promise<V>.pending();
-        Background.runInBackground {
-            self.provider.request(type, completion: {
-                result in
-                switch result {
-                case let .success(moyaResponse):
-                    do {
-                        let object = try moyaResponse.map(to: V.self);
-                        Background.runInMainThread {
-                            promise.fulfill(object);
-                        }
-                    }catch {
-                        print(error);
-                        print(type);
-                        Background.runInMainThread {
-                            promise.reject(error);
-                        }
-                    }
-                    break;
-                case let .failure(error):
-                    Background.runInMainThread {
-                        promise.reject(error);
-                    }
-                    break;
-                }
-            });
-        }
-        return promise.promise;
-    }
-    
-    public func makeRequestNoObjectReturn(_ type: T) -> Promise<Void> {
-        let promise = Promise<Void>.pending();
-        Background.runInBackground {
-            self.provider.request(type, completion: {
-                result in
-                switch result {
-                case let .success(moyaResponse):
-                    do {
-                        try moyaResponse.filterSuccessfulStatusAndRedirectCodes();
-                        Background.runInMainThread {
-                            promise.fulfill();
-                        }
-                        
-                    }catch {
-                        print(error);
-                        Background.runInMainThread {
-                            promise.reject(error);
-                        }
-                    }
-                    break;
-                case let .failure(error):
-                    Background.runInMainThread {
-                        promise.reject(error);
-                    }
-                    break;
-                }
-            });
-        }
-        
-        return promise.promise;
-    }
-    
-    
-    //a wrapper for a request which returns an array of objects
-    public func makeRequestArray(_ type: T) -> Promise<[V]> {
-        let promise = Promise<[V]>.pending();
-        Background.runInBackground {
-            self.provider.request(type, completion: {
-                result in
-                switch result {
-                case let .success(moyaResponse):
-                    do {
-                        let objects = try moyaResponse.map(to: [V.self]) as! [V];
-                        Background.runInMainThread {
-                            promise.fulfill(objects);
-                        }
-                    }catch {
-                        print(error);
-                        Background.runInMainThread {
-                            promise.reject(error);
-                        }
-                    }
-                    break;
-                case let .failure(error):
-                    Background.runInMainThread {
-                        promise.reject(error);
-                    }
-                    break;
-                }
-            });
-        }
-        
-        return promise.promise;
-    }
-    
-    
-}

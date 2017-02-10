@@ -180,8 +180,9 @@ open class PSModelCache {
     
 }
 
-
+//Generic Network Manager
 open class PSNetworkManager<T: PSCachedModel, TestingData: TestData> {
+    
     open static func saveNewObject(obj: T) -> Promise<T> {
         typealias APIMap = PSServiceMap<T, TestingData>;
         let service = PSService<APIMap, T>();
@@ -210,6 +211,22 @@ open class PSNetworkManager<T: PSCachedModel, TestingData: TestData> {
         let request = APIMap.getList;
         return service.makeRequestArray(request);
     }
+    
+    open static func getListOfObjects(params: [String: Any]) -> Promise<[T]> {
+        typealias APIMap = PSServiceMap<T, NoTestData>;
+        let service = PSService<APIMap, T>();
+        let request = APIMap.getListWith(params: params);
+        return service.makeRequestArray(request);
+    }
+    
+
+    open static func getPaginatedList(page: Int, limit: Int, params: [String: Any]) -> Promise<[T]> {
+        typealias APIMap = PSServiceMap<T, NoTestData>;
+        let service = PSService<APIMap, T>();
+        let request = APIMap.getListPaginated(page: page, limit: limit, params: params);
+        return service.makeRequestArray(request);
+    }
+    
     
 }
 
